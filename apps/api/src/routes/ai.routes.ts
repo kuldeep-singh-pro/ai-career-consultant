@@ -4,7 +4,7 @@ import { validate } from "../middleware/validate.middleware";
 import { aiSchema } from "../validators/ai.validator";
 import { aiGuard } from "../middleware/aiGuard.middleware";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/chat", validate(aiSchema), aiGuard, aiChatController);
 
