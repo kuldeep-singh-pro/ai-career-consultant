@@ -6,17 +6,6 @@ function mapGeminiError(error: unknown): never {
   const message = error instanceof Error ? error.message : String(error);
   const normalized = message.toLowerCase();
 
-  const isMissingApiKey =
-    normalized.includes("google_api_key") ||
-    (normalized.includes("api key") && normalized.includes("not set"));
-
-  if (isMissingApiKey) {
-    throw new ApiError(
-      500,
-      "Gemini API key is missing on the server. Set GOOGLE_API_KEY in apps/api/.env."
-    );
-  }
-
   const isQuotaExceeded =
     normalized.includes("429") ||
     normalized.includes("quota exceeded") ||
@@ -35,7 +24,7 @@ function mapGeminiError(error: unknown): never {
 
 export async function getAIResponse(question: string) {
   try {
-    const response = await getModel().invoke([
+    const response = await model.invoke([
       { role: "user", content: `${SYSTEM_PROMPT}\n\n${question}` },
     ]);
 
