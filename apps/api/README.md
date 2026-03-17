@@ -119,3 +119,15 @@ src/
 - Career advice chain (LCEL)
 - Resume PDF analyzer
 - Job matcher with structured output
+
+## Gemini API troubleshooting
+
+If `/api/ai/chat` returns a `429 Too Many Requests` / `quota exceeded` error:
+
+1. Confirm `GOOGLE_API_KEY` is set and points to the intended Google AI project.
+2. Check quota usage and limits in Google AI Studio.
+3. Enable billing (free-tier projects can have request/token limit = 0).
+4. Wait for retry window and send the request again.
+
+This API now returns JSON errors for upstream AI failures (instead of an HTML error page),
+including a specific message for Gemini quota exhaustion.
