@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 
 dotenv.config({
-  path: path.resolve(__dirname, "../.env"),
+  path: path.resolve(__dirname, "../../.env"),
 });
 
 
@@ -15,3 +15,5 @@ export const model = new ChatGoogleGenerativeAI({
   temperature: 0.7,
   apiKey: process.env.GOOGLE_API_KEY,
 });
+
+export const openai = model;

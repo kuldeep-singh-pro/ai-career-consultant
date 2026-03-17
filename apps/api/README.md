@@ -23,7 +23,7 @@ docker compose up -d
 ### 3. Configure environment
 ```bash
 cp .env.example .env
-# Edit .env — at minimum set JWT_SECRET and JWT_REFRESH_SECRET (min 32 chars each)
+# Edit .env — set GOOGLE_API_KEY for Gemini and any other app secrets you need
 ```
 
 ### 4. Run database migrations
