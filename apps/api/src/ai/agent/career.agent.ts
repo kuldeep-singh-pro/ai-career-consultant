@@ -1,11 +1,18 @@
-import { openai } from "../../config/openai";
-import { SYSTEM_PROMPT } from "../prompts/system.prompt";
+import { systemPrompt } from "../prompts/system.prompt";
 
-export async function runCareerAgent(question: string) {
-  const response = await openai.invoke([
-    { role: "system", content: SYSTEM_PROMPT },
-    { role: "user", content: question },
-  ]);
+export const careerPrompt = (input: string) => {
+  return `
+${systemPrompt}
 
-  return response.content;
-}
+User Input:
+${input}
+
+Give:
+- Career suggestions
+- Required skills
+- Roadmap (step-by-step)
+- Tools to learn
+
+⚠️ Keep answer under 300 words.
+`;
+};

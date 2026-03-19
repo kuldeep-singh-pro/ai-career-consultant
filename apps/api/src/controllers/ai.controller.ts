@@ -1,14 +1,21 @@
 import { Request, Response } from "express";
-import { getAIResponse } from "../services/ai.service";
-import { ApiResponse } from "../utils/apiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
+import { getCareerAdvice } from "../ai/usecases/careerAdvice.usecase";
 
-export const aiChatController = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { question } = req.body;
+export const askCareer = async (req: Request, res: Response) => {
+  try {
+    const { prompt } = req.body;
 
-    const answer = await getAIResponse(question);
+    const result = await getCareerAdvice(prompt);
 
-    res.json(new ApiResponse(true, "AI response generated", answer));
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "AI error",
+    });
   }
-);
+};

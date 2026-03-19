@@ -14,15 +14,15 @@ export const env = {
 };
 
 if (!env.OPENAI_API_KEY) {
-  throw new Error("❌ OPENAI_API_KEY is missing in .env file");
+  throw new Error(" OPENAI_API_KEY is missing in .env file");
 }
 
 if (!env.ANTHROPIC_API_KEY) {
-  throw new Error("❌ ANTHROPIC_API_KEY is missing in .env file");
+  throw new Error(" ANTHROPIC_API_KEY is missing in .env file");
 }
 
 if (!env.GEMINI_API_KEY) {
-  throw new Error("❌ GEMINI_API_KEY is missing in .env file");
+  throw new Error(" GEMINI_API_KEY is missing in .env file");
 }
 
-console.log("✅ Env loaded successfully");
+console.log(" Env loaded successfully");
