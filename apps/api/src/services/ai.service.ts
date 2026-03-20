@@ -4,7 +4,7 @@ import { env } from "../config/env";
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash-lite",
   apiKey: env.GEMINI_API_KEY,
-   maxOutputTokens: 500,
+   maxOutputTokens: 300,
 });
 
 export const askAI = async (prompt: string) => {

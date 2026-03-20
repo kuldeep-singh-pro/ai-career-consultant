@@ -13,6 +13,6 @@ Give:
 - Roadmap (step-by-step)
 - Tools to learn
 
-⚠️ Keep answer under 300 words.
+ Keep answer under 300 words.
 `;
 };
