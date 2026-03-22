@@ -1,24 +1,21 @@
-import { NextFunction, Request, Response } from "express";
-import { ApiError } from "../utils/apiError";
+import { Request, Response, NextFunction } from "express";
+import { HttpError } from "../errorHandler/httpError";
 
-export function errorHandler(
-  err: unknown,
+export const errorMiddleware = (
+  err: any,
   _req: Request,
   res: Response,
   _next: NextFunction
-) {
-  if (err instanceof ApiError) {
+) => {
+  if (err instanceof HttpError) {
     return res.status(err.statusCode).json({
       success: false,
       message: err.message,
     });
   }
 
-  const message = err instanceof Error ? err.message : "Internal server error";
-
   return res.status(500).json({
     success: false,
-    message,
+    message: "Internal Server Error",
   });
-}
-
+};

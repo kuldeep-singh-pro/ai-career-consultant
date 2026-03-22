@@ -1,28 +1,20 @@
 import dotenv from "dotenv";
-import path from "path";
 
-dotenv.config({
-  path: path.resolve(__dirname, "../../.env"),
-});
+dotenv.config();
 
 export const env = {
-  PORT: process.env.PORT || 5000,
-  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-  OPENAI_API_KEY:process.env.OPENAI_API_KEY,
-  GEMINI_API_KEY:process.env.GEMINI_API_KEY
-  
+  PORT: process.env.PORT || "5000",
+
+  MONGO_URI: process.env.MONGO_URI as string,
+
+  JWT_SECRET: process.env.JWT_SECRET as string,
+
+  JWT_EXPIRE:
+    (process.env.JWT_EXPIRE as "7d" | "1d" | "12h" | "30d") || "7d",
+
+  EMAIL_USER: process.env.EMAIL_USER as string,
+
+  EMAIL_PASS: process.env.EMAIL_PASS as string,
+
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY as string,
 };
-
-if (!env.OPENAI_API_KEY) {
-  throw new Error(" OPENAI_API_KEY is missing in .env file");
-}
-
-if (!env.ANTHROPIC_API_KEY) {
-  throw new Error(" ANTHROPIC_API_KEY is missing in .env file");
-}
-
-if (!env.GEMINI_API_KEY) {
-  throw new Error(" GEMINI_API_KEY is missing in .env file");
-}
-
-console.log(" Env loaded successfully");

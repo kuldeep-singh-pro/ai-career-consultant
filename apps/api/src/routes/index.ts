@@ -1,8 +1,15 @@
 import { Router } from "express";
-import aiRoutes from "./ai.routes";
+import authRoutes from "./auth.routes";
 
 const router = Router();
 
-router.use("/ai", aiRoutes);
+router.get("/health", (_req, res) => {
+  res.json({
+    success: true,
+    message: "API running",
+  });
+});
+
+router.use("/auth", authRoutes);
 
 export default router;
