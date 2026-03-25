@@ -1,48 +1,33 @@
-import mongoose from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
-const resumeSchema = new mongoose.Schema(
+export interface IResume {
+  userId: Types.ObjectId;
+  fileUrl: string;
+  extractedText: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const ResumeSchema = new Schema<IResume>(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
+    userId: {
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true
     },
 
-    fileName: {
+    fileUrl: {
       type: String,
-      required: true,
+      required: true
     },
 
     extractedText: {
       type: String,
-      required: true,
-    },
-
-    skills: [
-      {
-        name: String,
-        level: String,
-      },
-    ],
-
-    education: [
-      {
-        degree: String,
-        institution: String,
-      },
-    ],
-
-    experience: [
-      {
-        company: String,
-        role: String,
-      },
-    ],
+      required: true
+    }
   },
   { timestamps: true }
 );
 
-export const Resume = mongoose.model(
-  "Resume",
-  resumeSchema
-);
+export const Resume = model<IResume>("Resume", ResumeSchema);

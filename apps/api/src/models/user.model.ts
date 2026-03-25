@@ -1,21 +1,40 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  password: string;
+  isVerified: boolean;
+  role: "user" | "admin";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
-      required: true
+      required: true,
+      trim: true,
+      minlength: 2
     },
 
     email: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [
+        /^\S+@\S+\.\S+$/,
+        "Please use a valid email address"
+      ]
     },
 
     password: {
       type: String,
-      required: true
+      required: true,
+      select: false
     },
 
     isVerified: {
@@ -25,10 +44,16 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
+      enum: ["user", "admin"],
       default: "user"
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model<IUser>(
+  "User",
+  userSchema
+);

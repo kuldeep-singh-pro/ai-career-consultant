@@ -1,15 +1,26 @@
 import { Router } from "express";
-import { authMiddleware } from "../middleware/auth.middleware";
+
+import {
+  uploadResumeController,
+  getResumeAnalysisController,
+} from "../controller/resume.controller";
+
+import protect from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
-import { uploadResumeController } from "../controller/resume.controller";
 
 const router = Router();
 
 router.post(
   "/upload",
-  authMiddleware,
+  protect,
   upload.single("resume"),
   uploadResumeController
+);
+
+router.get(
+  "/analysis",
+  protect,
+  getResumeAnalysisController
 );
 
 export default router;
