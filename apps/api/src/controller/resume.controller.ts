@@ -1,28 +1,56 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
-import { uploadResumeService } from "../services/resume.service";
+import { extractTextFromPdf } from "../utils/pdfparser";
 
-export const uploadResumeController =
-  asyncHandler(async (req: Request, res: Response) => {
-    const file = req.file;
+import {
+  processResumeUpload,
+  getLatestResumeAnalysis
+} from "../services/resume.service";
 
-    if (!file) {
+import { AuthRequest } from "../types/auth.types";
+
+export const uploadResumeController = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "Resume file required",
+        message: "Resume file required"
       });
     }
 
-    const user = (req as any).user;
+    console.log("File received:", req.file.originalname);
 
-    const resume = await uploadResumeService(
-      user._id,
-      file.originalname,
-      file.buffer
+    const extractedText = await extractTextFromPdf(
+      req.file.buffer
+    );
+
+    console.log("Extracted text length:", extractedText.length);
+
+    const analysis = await processResumeUpload(
+      req.user._id,
+      req.file.originalname,
+      extractedText
+    );
+
+    console.log("AI analysis success");
+
+    return res.json({
+      success: true,
+      message: "Resume uploaded and analyzed successfully",
+      data: analysis
+    });
+  }
+);
+export const getResumeAnalysisController = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+
+    const analysis = await getLatestResumeAnalysis(
+      req.user._id
     );
 
     return res.json({
       success: true,
-      data: resume,
+      data: analysis
     });
-  });
+  }
+);

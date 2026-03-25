@@ -12,7 +12,7 @@ import {
 } from "../controller/auth.controller";
 
 import { validate } from "../middleware/validate.middleware";
-import { authMiddleware } from "../middleware/auth.middleware";
+import protect from "../middleware/auth.middleware";
 
 import {
   registerDto,
@@ -52,6 +52,6 @@ router.post(
   resetPasswordController
 );
 
-router.get("/me", authMiddleware, getMeController);
+router.get("/me", protect, getMeController);
 
 export default router;

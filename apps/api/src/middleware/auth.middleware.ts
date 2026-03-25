@@ -1,24 +1,33 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 import { env } from "../config/env";
 import { Unauthorized } from "../errorHandler/httpError";
 import { asyncHandler } from "../utils/asyncHandler";
 import { User } from "../models/user.model";
+import { AuthRequest } from "../types/auth.types";
 
-export const authMiddleware = asyncHandler(
-  async (req: Request, _res: Response, next: NextFunction) => {
+interface JwtPayload {
+  id: string;
+}
+
+const protect = asyncHandler(
+  async (req: AuthRequest, _res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new Unauthorized("Token missing");
+    if (!authHeader?.startsWith("Bearer ")) {
+      throw new Unauthorized("Token missing or malformed");
     }
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, env.JWT_SECRET) as {
-      id: string;
-    };
+    let decoded: JwtPayload;
+
+    try {
+      decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
+    } catch {
+      throw new Unauthorized("Invalid or expired token");
+    }
 
     const user = await User.findById(decoded.id).select("-password");
 
@@ -26,8 +35,10 @@ export const authMiddleware = asyncHandler(
       throw new Unauthorized("User not found");
     }
 
-    (req as any).user = user;
+    req.user = user as any;
 
     next();
   }
 );
+
+export default protect;

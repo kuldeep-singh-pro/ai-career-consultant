@@ -52,7 +52,7 @@ export const loginUserService = async (
   email: string,
   password: string
 ) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
     throw new Unauthorized("Invalid credentials");
@@ -85,7 +85,6 @@ export const loginUserService = async (
   };
 };
 
-
 export const checkUserForOtpResendService = async (
   email: string
 ) => {
@@ -106,7 +105,7 @@ export const resetPasswordService = async (
   email: string,
   password: string
 ) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
     throw new NotFound("User not found");
@@ -117,4 +116,6 @@ export const resetPasswordService = async (
   user.password = hashedPassword;
 
   await user.save();
+
+  return true;
 };
