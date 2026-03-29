@@ -1,10 +1,12 @@
 import { Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { extractTextFromPdf } from "../utils/pdfparser";
+import { BadRequest } from "../errorHandler/httpError";
+import { successResponse } from "../utils/ApiResponse";
 
 import {
   processResumeUpload,
-  getLatestResumeAnalysis
+  getLatestResumeAnalysis,
 } from "../services/resume.service";
 
 import { AuthRequest } from "../types/auth.types";
@@ -12,17 +14,12 @@ import { AuthRequest } from "../types/auth.types";
 export const uploadResumeController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: "Resume file required"
-      });
+      throw new BadRequest("Resume file required");
     }
 
     console.log("File received:", req.file.originalname);
 
-    const extractedText = await extractTextFromPdf(
-      req.file.buffer
-    );
+    const extractedText = await extractTextFromPdf(req.file.buffer);
 
     console.log("Extracted text length:", extractedText.length);
 
@@ -34,23 +31,18 @@ export const uploadResumeController = asyncHandler(
 
     console.log("AI analysis success");
 
-    return res.json({
-      success: true,
-      message: "Resume uploaded and analyzed successfully",
-      data: analysis
-    });
+    return successResponse(
+      res,
+      "Resume uploaded and analyzed successfully",
+      analysis
+    );
   }
 );
+
 export const getResumeAnalysisController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
+    const analysis = await getLatestResumeAnalysis(req.user._id);
 
-    const analysis = await getLatestResumeAnalysis(
-      req.user._id
-    );
-
-    return res.json({
-      success: true,
-      data: analysis
-    });
+    return successResponse(res, "Resume analysis retrieved successfully", analysis);
   }
 );

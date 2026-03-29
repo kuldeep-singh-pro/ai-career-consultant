@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -7,7 +7,7 @@ import rateLimit from "express-rate-limit";
 import routes from "./routes";
 import { errorMiddleware } from "./middleware/error.middleware";
 
-const app = express();
+const app: Express = express();
 
 app.set("trust proxy", 1);
 
