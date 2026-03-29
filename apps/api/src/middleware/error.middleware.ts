@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { HttpError } from "../errorHandler/httpError";
 
 export const errorMiddleware = (
@@ -11,6 +12,13 @@ export const errorMiddleware = (
     return res.status(err.statusCode).json({
       success: false,
       message: err.message,
+    });
+  }
+
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      success: false,
+      message: err.errors[0]?.message || "Validation error",
     });
   }
 

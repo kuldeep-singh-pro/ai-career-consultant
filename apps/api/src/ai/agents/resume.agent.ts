@@ -1,6 +1,7 @@
 import { HumanMessage } from "@langchain/core/messages";
 import { geminiModel } from "./gemini.agent";
-import  {ResumeAnalysisResponseDto}  from "../../dto/resume.dto";
+import { ResumeAnalysisResponseDto } from "../../dto/resume.dto";
+import { InternalServerError } from "../../errorHandler/httpError";
 
 export const analyzeResumeWithAI = async (resumeText: string) => {
   try {
@@ -42,7 +43,7 @@ ${resumeText}
     const jsonEnd = cleaned.lastIndexOf("}") + 1;
 
     if (jsonStart === -1 || jsonEnd === -1) {
-      throw new Error("Invalid JSON returned from Gemini");
+      throw new InternalServerError("Invalid JSON returned from Gemini");
     }
 
     const safeJson = cleaned.slice(jsonStart, jsonEnd);
@@ -56,6 +57,6 @@ ${resumeText}
 
   } catch (error) {
     console.error("Gemini analysis error:", error);
-    throw new Error("Failed to analyze resume with AI");
+    throw new InternalServerError("Failed to analyze resume with AI");
   }
 };

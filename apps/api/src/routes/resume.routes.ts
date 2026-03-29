@@ -8,7 +8,7 @@ import {
 import protect from "../middleware/auth.middleware";
 import { upload } from "../middleware/upload.middleware";
 
-const router = Router();
+const router: Router = Router();
 
 router.post(
   "/upload",

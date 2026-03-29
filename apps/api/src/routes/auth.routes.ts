@@ -24,7 +24,7 @@ import {
   resetPasswordDto,
 } from "../dto/auth.dto";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/register", validate(registerDto), registerController);
 

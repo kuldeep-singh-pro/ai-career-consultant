@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
+import { BadRequest } from "../errorHandler/httpError";
+import { successResponse } from "../utils/ApiResponse";
 
 import {
   registerUserService,
@@ -22,10 +24,7 @@ export const registerController = asyncHandler(
 
     await createAndSendOtp(email, "verify");
 
-    return res.json({
-      success: true,
-      message: "OTP sent successfully",
-    });
+    return successResponse(res, "OTP sent successfully");
   }
 );
 
@@ -40,18 +39,12 @@ export const verifyOtpController = asyncHandler(
     );
 
     if (!valid) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid OTP",
-      });
+      throw new BadRequest("Invalid OTP");
     }
 
     await verifyUserService(email);
 
-    return res.json({
-      success: true,
-      message: "Account verified successfully",
-    });
+    return successResponse(res, "Account verified successfully");
   }
 );
 
@@ -63,10 +56,7 @@ export const resendOtpController = asyncHandler(
 
     await createAndSendOtp(email, "verify");
 
-    return res.json({
-      success: true,
-      message: "OTP resent successfully",
-    });
+    return successResponse(res, "OTP resent successfully");
   }
 );
 
@@ -76,10 +66,7 @@ export const loginController = asyncHandler(
 
     const data = await loginUserService(email, password);
 
-    return res.json({
-      success: true,
-      data,
-    });
+    return successResponse(res, "Login successful", data);
   }
 );
 
@@ -89,10 +76,7 @@ export const forgotPasswordController = asyncHandler(
 
     await createAndSendOtp(email, "reset");
 
-    return res.json({
-      success: true,
-      message: "Reset OTP sent successfully",
-    });
+    return successResponse(res, "Reset OTP sent successfully");
   }
 );
 
@@ -107,16 +91,10 @@ export const verifyResetOtpController = asyncHandler(
     );
 
     if (!valid) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid OTP",
-      });
+      throw new BadRequest("Invalid OTP");
     }
 
-    return res.json({
-      success: true,
-      message: "OTP verified",
-    });
+    return successResponse(res, "OTP verified");
   }
 );
 
@@ -126,10 +104,7 @@ export const resetPasswordController = asyncHandler(
 
     await resetPasswordService(email, password);
 
-    return res.json({
-      success: true,
-      message: "Password reset successfully",
-    });
+    return successResponse(res, "Password reset successfully");
   }
 );
 
@@ -137,9 +112,6 @@ export const getMeController = asyncHandler(
   async (req: Request, res: Response) => {
     const user = (req as any).user;
 
-    return res.json({
-      success: true,
-      data: user,
-    });
+    return successResponse(res, "User retrieved successfully", user);
   }
 );
