@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authRoutes from "./auth.routes";
 import resumeRoutes from "./resume.routes";
+import skillgapRoutes from "./skillgap.routes";
 
 const router: Router = Router();
 
@@ -13,5 +14,6 @@ router.get("/health", (_req, res) => {
 
 router.use("/auth", authRoutes);
 router.use("/resume", resumeRoutes);
+router.use("/skillgap", skillgapRoutes);
 
 export default router;
