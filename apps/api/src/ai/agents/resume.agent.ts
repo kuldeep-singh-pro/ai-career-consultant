@@ -20,7 +20,7 @@ Analyze this resume and return STRICT JSON only:
   "strengths": string[],
   "weaknesses": string[],
   "careerRoadmap": string[]
-}
+}     
 
 Resume:
 ${resumeText}
