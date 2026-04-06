@@ -1,23 +1,18 @@
 import mongoose, { Schema, Types } from "mongoose";
 
 export interface ISkillGap {
-
   userId: Types.ObjectId;
-
   targetRole: string;
-
   currentSkills: string[];
-
   missingSkills: string[];
-
   matchPercentage: number;
-
   learningPlan: {
     skill: string;
     priority: string;
     weeks: number;
   }[];
-
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const SkillGapSchema = new Schema<ISkillGap>(
