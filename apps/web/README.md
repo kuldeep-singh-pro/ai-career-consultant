@@ -1,22 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/create-next-app).
+# AI Career Consultant - Web Frontend
 
-## Getting Started
+A production-ready React frontend for the AI Career Consultant platform.
 
-First, run the development server:
+## Tech Stack
+
+- React 19 + TypeScript
+- Vite (build tool)
+- React Router 7 (routing)
+- Axios + TanStack Query (data fetching)
+- Tailwind CSS (styling)
+
+## Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create `.env.local`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+## Development
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000)
+
+## Build
+
+```bash
+pnpm build
+```
+
+## Project Structure
+
+```
+src/
+├── api/              # Axios instance with JWT interceptor
+├── services/         # API service layer
+├── hooks/            # TanStack Query hooks
+├── pages/            # Route pages
+├── layouts/          # Common layouts
+├── components/       # Reusable components
+├── context/          # React Context (auth)
+├── types/            # TypeScript types
+├── utils/            # Utility functions
+└── routes/           # Route definitions
+```
+
+## Features Implemented
+
+✅ Authentication (Register/Login)
+✅ Dashboard with stats
+✅ Resume upload & analysis
+✅ Skill gap analysis
+✅ Career paths generation
+✅ Roadmap creation & tracking
+✅ AI mentor chat
+✅ Profile management
+✅ Settings & preferences
+✅ Protected routes
+✅ JWT auth with auto-injection
+✅ Responsive design
+✅ Dark mode support
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load Inter, a custom Google Font.
 
