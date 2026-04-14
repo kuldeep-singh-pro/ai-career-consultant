@@ -16,6 +16,9 @@ import {
   verifyStoredOtp,
 } from "../services/otp.service";
 
+import { User } from "../models/user.model";
+import { AuthRequest } from "../types/auth.types";
+
 export const registerController = asyncHandler(
   async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
@@ -44,7 +47,10 @@ export const verifyOtpController = asyncHandler(
 
     await verifyUserService(email);
 
-    return successResponse(res, "Account verified successfully");
+    return successResponse(
+      res,
+      "Account verified successfully"
+    );
   }
 );
 
@@ -56,7 +62,10 @@ export const resendOtpController = asyncHandler(
 
     await createAndSendOtp(email, "verify");
 
-    return successResponse(res, "OTP resent successfully");
+    return successResponse(
+      res,
+      "OTP resent successfully"
+    );
   }
 );
 
@@ -64,9 +73,16 @@ export const loginController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    const data = await loginUserService(email, password);
+    const data = await loginUserService(
+      email,
+      password
+    );
 
-    return successResponse(res, "Login successful", data);
+    return successResponse(
+      res,
+      "Login successful",
+      data
+    );
   }
 );
 
@@ -74,9 +90,18 @@ export const forgotPasswordController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email } = req.body;
 
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new BadRequest("User not found");
+    }
+
     await createAndSendOtp(email, "reset");
 
-    return successResponse(res, "Reset OTP sent successfully");
+    return successResponse(
+      res,
+      "Reset OTP sent successfully"
+    );
   }
 );
 
@@ -102,16 +127,24 @@ export const resetPasswordController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    await resetPasswordService(email, password);
+    await resetPasswordService(
+      email,
+      password
+    );
 
-    return successResponse(res, "Password reset successfully");
+    return successResponse(
+      res,
+      "Password reset successfully"
+    );
   }
 );
 
 export const getMeController = asyncHandler(
-  async (req: Request, res: Response) => {
-    const user = (req as any).user;
-
-    return successResponse(res, "User retrieved successfully", user);
+  async (req: AuthRequest, res: Response) => {
+    return successResponse(
+      res,
+      "User retrieved successfully",
+      req.user
+    );
   }
 );

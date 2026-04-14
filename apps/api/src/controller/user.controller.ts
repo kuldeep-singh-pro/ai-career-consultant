@@ -1,50 +1,45 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import { asyncHandler } from "../utils/asyncHandler";
+import { successResponse } from "../utils/ApiResponse";
 import { User } from "../models/user.model";
+import { AuthRequest } from "../types/auth.types";
 
-export const getCurrentUserController = async (
-  req: Request,
-  res: Response
-) => {
-  const user = await User.findById(req.user.id).select(
-    "-password"
-  );
+export const getCurrentUserController = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const user = await User.findById(req.user._id).select("-password");
 
-  res.json({
-    success: true,
-    data: user
-  });
-};
+    return successResponse(res, "User retrieved successfully", user);
+  }
+);
 
-export const updateCurrentUserController = async (
-  req: Request,
-  res: Response
-) => {
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    req.body,
-    { new: true }
-  ).select("-password");
+export const updateCurrentUserController = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { password, role, ...safeUpdates } = req.body;
 
-  res.json({
-    success: true,
-    data: updatedUser
-  });
-};
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      safeUpdates,
+      { new: true, runValidators: true }
+    ).select("-password");
 
-export const uploadProfilePictureController = async (
-  req: Request,
-  res: Response
-) => {
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      profilePicture: req.file?.path
-    },
-    { new: true }
-  );
+    return successResponse(res, "User updated successfully", updatedUser);
+  }
+);
 
-  res.json({
-    success: true,
-    data: updatedUser
-  });
-};
+export const uploadProfilePictureController = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        profilePicture: req.file?.path,
+      },
+      { new: true }
+    );
+
+    return successResponse(
+      res,
+      "Profile picture uploaded successfully",
+      updatedUser
+    );
+  }
+);
