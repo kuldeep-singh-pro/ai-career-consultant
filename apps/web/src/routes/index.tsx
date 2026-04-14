@@ -13,7 +13,7 @@ import { SkillGapPage } from '../pages/SkillGapPage';
 import { CareerPathsPage } from '../pages/CareerPathsPage';
 import { RoadmapPage } from '../pages/RoadmapPage';
 import { MentorChatPage } from '../pages/MentorChatPage';
-import { ProfilePage } from '../pages/ProfilePage';
+import { UserPage } from '../pages/UserPage';
 import { SettingsPage } from '../pages/SettingsPage';
 
 export const AppRoutes: React.FC = () => {
@@ -78,7 +78,7 @@ export const AppRoutes: React.FC = () => {
             path="/profile"
             element={
               <ProtectedRoute>
-                <ProfilePage />
+                <UserPage />
               </ProtectedRoute>
             }
           />

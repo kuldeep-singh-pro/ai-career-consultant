@@ -1,51 +1,111 @@
-import axiosInstance from '../api/axiosInstance';
-import { CareerPath, Roadmap, Milestone } from '../types';
+import axiosInstance from "../api/axiosInstance";
+import { CareerPath, Roadmap } from "../types";
 
 export const careerService = {
-  async generateCareerPath() {
-    const response = await axiosInstance.post<{ success: boolean; data: CareerPath }>('/career/generate');
+  async generateCareerPath(payload: any) {
+    const response = await axiosInstance.post<{
+      success: boolean;
+      data: CareerPath;
+    }>("/career/generate", payload);
+
+    return response.data.data;
+  },
+
+  async generateQuickCareerPath() {
+    const response = await axiosInstance.post<{
+      success: boolean;
+      data: CareerPath;
+    }>("/career/generate-quick");
+
     return response.data.data;
   },
 
   async getCareerPaths() {
-    const response = await axiosInstance.get<{ success: boolean; data: CareerPath[] }>('/career/paths');
+    const response = await axiosInstance.get<{
+      success: boolean;
+      data: CareerPath[];
+    }>("/career/all");
+
+    return response.data.data;
+  },
+
+  async getCareerPathsWithProgress() {
+    const response = await axiosInstance.get<{
+      success: boolean;
+      data: CareerPath[];
+    }>("/career/all-with-progress");
+
+    return response.data.data;
+  },
+
+  async getLatestCareerPath() {
+    const response = await axiosInstance.get<{
+      success: boolean;
+      data: CareerPath;
+    }>("/career/latest");
+
     return response.data.data;
   },
 
   async getCareerPath(pathId: string) {
-    const response = await axiosInstance.get<{ success: boolean; data: CareerPath }>(`/career/paths/${pathId}`);
+    const response = await axiosInstance.get<{
+      success: boolean;
+      data: CareerPath;
+    }>(`/career/${pathId}`);
+
     return response.data.data;
   },
 
-  async updateCareerPath(pathId: string, data: Partial<CareerPath>) {
-    const response = await axiosInstance.put(`/career/paths/${pathId}`, data);
+  async updateProgress(pathId: string, progress: number) {
+    const response = await axiosInstance.patch(
+      `/career/${pathId}/progress`,
+      { progress }
+    );
+
+    return response.data.data;
+  },
+
+  async updateMilestone(pathId: string, milestoneId: string) {
+    const response = await axiosInstance.patch(
+      `/career/${pathId}/milestone`,
+      { milestoneId }
+    );
+
+    return response.data.data;
+  },
+
+  async updateResource(pathId: string, resourceId: string) {
+    const response = await axiosInstance.patch(
+      `/career/${pathId}/resource`,
+      { resourceId }
+    );
+
+    return response.data.data;
+  },
+
+  async updateStatus(pathId: string, status: string) {
+    const response = await axiosInstance.patch(
+      `/career/${pathId}/status`,
+      { status }
+    );
+
     return response.data.data;
   },
 
   async deleteCareerPath(pathId: string) {
-    const response = await axiosInstance.delete(`/career/paths/${pathId}`);
+    const response = await axiosInstance.delete(
+      `/career/${pathId}`
+    );
+
     return response.data.data;
   },
 
-  async generateRoadmap(careerPathId: string) {
-    const response = await axiosInstance.post<{ success: boolean; data: Roadmap }>('/roadmap/generate', {
-      careerPathId,
-    });
-    return response.data.data;
-  },
+  async generateRoadmap(payload: any) {
+    const response = await axiosInstance.post<{
+      success: boolean;
+      data: Roadmap;
+    }>("/career/roadmap/generate", payload);
 
-  async getRoadmaps() {
-    const response = await axiosInstance.get<{ success: boolean; data: Roadmap[] }>('/roadmap');
-    return response.data.data;
-  },
-
-  async getRoadmap(roadmapId: string) {
-    const response = await axiosInstance.get<{ success: boolean; data: Roadmap }>(`/roadmap/${roadmapId}`);
-    return response.data.data;
-  },
-
-  async updateMilestone(roadmapId: string, milestoneId: string, status: string) {
-    const response = await axiosInstance.put(`/roadmap/${roadmapId}/milestone/${milestoneId}`, { status });
     return response.data.data;
   },
 };

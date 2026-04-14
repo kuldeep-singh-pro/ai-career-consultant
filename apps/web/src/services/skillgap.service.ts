@@ -1,19 +1,22 @@
-import axiosInstance from '../api/axiosInstance';
-import { SkillGap } from '../types';
+import axiosInstance from "../api/axiosInstance";
+import { SkillGap } from "../types";
 
 export const skillGapService = {
-  async generateSkillGap() {
-    const response = await axiosInstance.post<{ success: boolean; data: SkillGap }>('/skillgap/generate');
+  async generateSkillGap(payload: any) {
+    const response = await axiosInstance.post<{
+      success: boolean;
+      data: SkillGap;
+    }>("/skillgap/analyze", payload);
+
     return response.data.data;
   },
 
   async getSkillGap() {
-    const response = await axiosInstance.get<{ success: boolean; data: SkillGap }>('/skillgap/latest');
-    return response.data.data;
-  },
+    const response = await axiosInstance.get<{
+      success: boolean;
+      data: SkillGap;
+    }>("/skillgap/analysis");
 
-  async updateSkillGap(skillGapId: string, analysis: any) {
-    const response = await axiosInstance.put(`/skillgap/${skillGapId}`, { analysis });
     return response.data.data;
   },
 };

@@ -6,10 +6,10 @@ export interface IUser extends Document {
   password: string;
   isVerified: boolean;
   role: "user" | "admin";
+  profilePicture?: string;
   createdAt: Date;
   updatedAt: Date;
 }
-
 
 const userSchema = new Schema<IUser>(
   {
@@ -26,10 +26,7 @@ const userSchema = new Schema<IUser>(
       unique: true,
       lowercase: true,
       trim: true,
-      match: [
-        /^\S+@\S+\.\S+$/,
-        "Please use a valid email address"
-      ]
+      match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"]
     },
 
     password: {
@@ -47,6 +44,11 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: ["user", "admin"],
       default: "user"
+    },
+
+    profilePicture: {
+      type: String,
+      default: ""
     }
   },
   {
@@ -54,7 +56,4 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-export const User = mongoose.model<IUser>(
-  "User",
-  userSchema
-);
+export const User = mongoose.model<IUser>("User", userSchema);
