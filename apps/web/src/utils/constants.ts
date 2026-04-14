@@ -4,6 +4,7 @@ export const ROUTES = {
     LOGIN: '/login',
     REGISTER: '/register',
   },
+
   PROTECTED: {
     DASHBOARD: '/dashboard',
     RESUME_ANALYZER: '/resume-analyzer',
@@ -23,38 +24,49 @@ export const API_ENDPOINTS = {
     VERIFY_OTP: '/auth/verify-otp',
     RESET_PASSWORD: '/auth/reset-password',
   },
+
   DASHBOARD: {
     STATS: '/dashboard/stats',
     OVERVIEW: '/dashboard/overview',
     PROGRESS: '/dashboard/progress',
     SKILLS_ANALYTICS: '/dashboard/skills-analytics',
   },
+
   RESUME: {
     UPLOAD: '/resume/upload',
-    ANALYZE: '/resume/analyze',
-    ANALYSIS: '/resume/analysis',
+
+    // fixed endpoint (matches backend)
+    ANALYZE: (resumeId: string) => `/resume/analysis/${resumeId}`,
+
+    ANALYSIS: (analysisId: string) =>
+      `/resume/analysis/${analysisId}`,
   },
+
   SKILLGAP: {
     GENERATE: '/skillgap/generate',
     LATEST: '/skillgap/latest',
   },
+
   CAREER: {
     GENERATE: '/career/generate',
     PATHS: '/career/paths',
     ROADMAP_GENERATE: '/roadmap/generate',
     ROADMAP: '/roadmap',
   },
+
   MENTOR: {
     SEND: '/mentor/send',
     HISTORY: '/mentor/history',
     SESSIONS: '/mentor/sessions',
     SESSION: '/mentor/session',
   },
+
   PROFILE: {
     GET: '/profile',
     UPDATE: '/profile',
     UPLOAD_PICTURE: '/profile/upload-picture',
   },
+
   SETTINGS: {
     GET: '/settings',
     UPDATE: '/settings',

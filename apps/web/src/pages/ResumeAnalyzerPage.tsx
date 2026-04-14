@@ -8,6 +8,7 @@ export const ResumeAnalyzerPage: React.FC = () => {
   const { mutate: uploadMutate, isPending: isUploading } = useUploadResume();
   const { mutate: analyzeMutate, isPending: isAnalyzing } = useAnalyzeResume();
 
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
