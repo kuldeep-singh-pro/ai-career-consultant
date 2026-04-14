@@ -3,11 +3,11 @@ import protect from "../middleware/auth.middleware";
 import {
   getCurrentUserController,
   updateCurrentUserController,
-  uploadProfilePictureController
+  uploadProfilePictureController,
 } from "../controller/user.controller";
 import { upload } from "../middleware/upload.middleware";
 
-const router = Router();
+const router: Router = Router();
 
 router.get("/me", protect, getCurrentUserController);
 
