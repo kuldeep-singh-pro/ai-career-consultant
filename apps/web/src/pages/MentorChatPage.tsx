@@ -10,6 +10,7 @@ import {
   useMentorSessions,
   useMentorHistory,
   useSendMessage,
+  useClearMentorSession,
 } from "../hooks/useMentor";
 
 export const MentorChatPage: React.FC =
@@ -20,11 +21,17 @@ export const MentorChatPage: React.FC =
     ] = useState("");
 
     const [
-      tempTitles,
-      setTempTitles,
-    ] = useState<
-      Record<string, string>
-    >({});
+      openMenuId,
+      setOpenMenuId,
+    ] = useState("");
+
+    const [
+      confirmDeleteId,
+      setConfirmDeleteId,
+    ] = useState("");
+
+    const menuRef =
+      useRef<HTMLDivElement>(null);
 
     const [message, setMessage] =
       useState("");
@@ -51,41 +58,75 @@ export const MentorChatPage: React.FC =
       isPending,
     } = useSendMessage();
 
+    const {
+      mutate: deleteSession,
+    } = useClearMentorSession();
+
     useEffect(() => {
       messagesEndRef.current?.scrollIntoView(
-        {
-          behavior: "smooth",
-        }
+        { behavior: "smooth" }
       );
     }, [history]);
+
+    useEffect(() => {
+      const handleClickOutside = (
+        event: MouseEvent
+      ) => {
+        if (
+          menuRef.current &&
+          !menuRef.current.contains(
+            event.target as Node
+          )
+        ) {
+          setOpenMenuId("");
+        }
+      };
+
+      document.addEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+
+      return () =>
+        document.removeEventListener(
+          "mousedown",
+          handleClickOutside
+        );
+    }, []);
+
+    useEffect(() => {
+      const escHandler = (
+        e: KeyboardEvent
+      ) => {
+        if (e.key === "Escape") {
+          setOpenMenuId("");
+          setConfirmDeleteId("");
+        }
+      };
+
+      window.addEventListener(
+        "keydown",
+        escHandler
+      );
+
+      return () =>
+        window.removeEventListener(
+          "keydown",
+          escHandler
+        );
+    }, []);
 
     const startNewChat = () => {
       const id =
         "session_" + Date.now();
 
       setSelectedSessionId(id);
-
-      setTempTitles((prev) => ({
-        ...prev,
-        [id]: "New Conversation",
-      }));
+      setOpenMenuId("");
     };
 
     const handleSendMessage = () => {
       if (!message.trim())
         return;
-
-      if (
-        !tempTitles[
-          selectedSessionId
-        ]
-      ) {
-        setTempTitles((prev) => ({
-          ...prev,
-          [selectedSessionId]:
-            message.slice(0, 40),
-        }));
-      }
 
       sendMessage(
         {
@@ -96,35 +137,30 @@ export const MentorChatPage: React.FC =
         {
           onSuccess: () => {
             setMessage("");
-
             refetchSessions();
-
             refetchHistory();
           },
         }
       );
     };
 
-    const getSessionTitle = (
-      session: any
-    ) => {
-      if (session.title)
-        return session.title.slice(
-          0,
-          40
-        );
+    const confirmDeleteSession =
+      (sessionId: string) => {
+        deleteSession(sessionId, {
+          onSuccess: () => {
+            if (
+              selectedSessionId ===
+              sessionId
+            ) {
+              setSelectedSessionId("");
+            }
 
-      if (
-        tempTitles[
-          session.sessionId
-        ]
-      )
-        return tempTitles[
-          session.sessionId
-        ];
-
-      return "New Conversation";
-    };
+            setConfirmDeleteId("");
+            setOpenMenuId("");
+            refetchSessions();
+          },
+        });
+      };
 
     return (
       <DashboardLayout>
@@ -134,7 +170,7 @@ export const MentorChatPage: React.FC =
           </h1>
 
           <div className="flex flex-1 gap-6">
-            <div className="w-72 bg-white border rounded-xl shadow-sm flex flex-col">
+            <div className="w-72 bg-white border rounded-xl shadow-sm flex flex-col relative">
               <div className="p-4 border-b">
                 <button
                   onClick={
@@ -146,32 +182,112 @@ export const MentorChatPage: React.FC =
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              <div
+                ref={menuRef}
+                className="flex-1 overflow-y-auto p-3 space-y-2"
+              >
                 {sessions?.map(
                   (session: any) => (
-                    <button
+                    <div
                       key={
                         session.sessionId
                       }
-                      onClick={() =>
-                        setSelectedSessionId(
-                          session.sessionId
-                        )
-                      }
-                      className={`w-full text-left px-4 py-2 rounded-lg text-sm transition ${
+                      className={`relative flex items-center justify-between px-3 py-2 rounded-lg group ${
                         selectedSessionId ===
                         session.sessionId
-                          ? "bg-blue-600 text-white shadow"
+                          ? "bg-blue-600 text-white"
                           : "hover:bg-gray-100"
                       }`}
                     >
-                      {getSessionTitle(
-                        session
+                      <button
+                        onClick={() => {
+                          setSelectedSessionId(
+                            session.sessionId
+                          );
+                          setOpenMenuId(
+                            ""
+                          );
+                        }}
+                        className="flex-1 text-left text-sm"
+                      >
+                        {session.title?.slice(
+                          0,
+                          35
+                        ) ||
+                          "New Conversation"}
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          setOpenMenuId(
+                            openMenuId ===
+                              session.sessionId
+                              ? ""
+                              : session.sessionId
+                          )
+                        }
+                        className="opacity-0 group-hover:opacity-100 transition px-1"
+                      >
+                        ⋯
+                      </button>
+
+                      {openMenuId ===
+                        session.sessionId && (
+                        <div className="absolute right-2 top-9 bg-white border shadow rounded text-sm z-10">
+                          <button
+                            onClick={() => {
+                              setConfirmDeleteId(
+                                session.sessionId
+                              );
+                              setOpenMenuId(
+                                ""
+                              );
+                            }}
+                            className="block px-4 py-2 hover:bg-gray-100 text-red-500"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       )}
-                    </button>
+                    </div>
                   )
                 )}
               </div>
+
+              {confirmDeleteId && (
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-20">
+                  <div className="bg-white rounded-lg shadow-lg p-6 w-72">
+                    <p className="text-sm mb-4">
+                      Delete this
+                      conversation?
+                    </p>
+
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() =>
+                          setConfirmDeleteId(
+                            ""
+                          )
+                        }
+                        className="px-4 py-1 text-sm border rounded"
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          confirmDeleteSession(
+                            confirmDeleteId
+                          )
+                        }
+                        className="px-4 py-1 text-sm bg-red-600 text-white rounded"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex-1 bg-white border rounded-xl shadow-sm flex flex-col">

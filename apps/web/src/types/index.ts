@@ -2,8 +2,11 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'user' | 'admin';
+  role: "user" | "admin";
   profilePicture?: string;
+  isVerified?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuthResponse {
@@ -77,24 +80,29 @@ export interface SkillGap {
   updatedAt: string;
 }
 
+export interface CareerMilestone {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
 export interface CareerPath {
   id: string;
   userId: string;
-  title: string;
-  description: string;
-  milestones: Milestone[];
+  targetRole: string;
+  currentRole: string;
+  matchPercentage: number;
+  milestones: CareerMilestone[];
   progress: number;
+  totalProgress?: number;
   createdAt: string;
+  updatedAt?: string;
 }
 
-export interface CareerStep {
-  id: string;
-  step: number;
+export interface RoadmapMilestone {
   title: string;
   description: string;
-  duration: string;
-  skills: string[];
-  resources: string[];
+  status: "pending" | "in-progress" | "completed";
 }
 
 export interface Roadmap {
@@ -102,56 +110,62 @@ export interface Roadmap {
   userId: string;
   careerPathId: string;
   title: string;
-  description: string;
-  milestones: Milestone[];
-  timeline: string;
-  currentMilestone: number;
+  milestones: RoadmapMilestone[];
   progress: number;
   createdAt: string;
-}
-
-export interface Milestone {
-  id: string;
-  number: number;
-  title: string;
-  description: string;
-  dueDate: string;
-  status: 'pending' | 'in-progress' | 'completed';
-  tasks: string[];
 }
 
 export interface MentorMessage {
   id: string;
   userId: string;
   sessionId: string;
-  sender: 'user' | 'mentor';
   message: string;
+  response: string;
+  messageType: "user" | "assistant";
   timestamp: string;
-  type?: 'text' | 'suggestion' | 'recommendation';
 }
 
 export interface MentorSession {
-  id: string;
-  userId: string;
-  topic: string;
-  createdAt: string;
-  updatedAt: string;
+  sessionId: string;
   messageCount: number;
+  firstMessage: string;
+  lastMessage: string;
+  title?: string;
 }
 
 export interface UserSettings {
   id: string;
   userId: string;
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  darkMode: boolean;
-  theme: 'light' | 'dark' | 'auto';
-  language: string;
-  timezone: string;
   privacy: {
-    profileVisibility: 'public' | 'private';
-    showEmail: boolean;
-    showPhone: boolean;
+    profileVisibility: "public" | "private" | "connections";
+    dataSharing: boolean;
+    analytics: boolean;
+  };
+  preferences: {
+    language: string;
+    timezone: string;
+    theme: "light" | "dark" | "auto";
+    emailFrequency: "daily" | "weekly" | "monthly" | "never";
+  };
+  career: {
+    targetRoles: string[];
+    industries: string[];
+    salaryRange: {
+      min: number;
+      max: number;
+      currency: string;
+    };
+    workPreferences: {
+      remote: boolean;
+      hybrid: boolean;
+      onsite: boolean;
+      travel: boolean;
+    };
+  };
+  skills: {
+    focusAreas: string[];
+    learningStyle: "visual" | "auditory" | "kinesthetic" | "reading";
+    timeCommitment: "low" | "medium" | "high";
   };
 }
 
@@ -161,14 +175,12 @@ export interface DashboardStats {
     skillsCount: number;
     lastAnalyzed?: string;
   };
-
   skillGap: {
     hasAnalysis: boolean;
     matchPercentage: number;
     missingSkillsCount: number;
     lastAnalyzed?: string;
   };
-
   career: {
     totalPaths: number;
     activePaths: number;
@@ -176,12 +188,10 @@ export interface DashboardStats {
     overallProgress: number;
     resourceProgress: number;
   };
-
   mentor: {
     totalConversations: number;
     lastConversation?: string;
   };
-
   settings: {
     isConfigured: boolean;
     theme: string;

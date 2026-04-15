@@ -1,124 +1,144 @@
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import {
   useCurrentUser,
-  useUpdateUser,
-  useUploadProfilePicture,
+  useUpdateUser
 } from "../hooks/useUser";
-import { useState } from "react";
 
-export const UserPage: React.FC = () => {
-  const { data: user, isPending } = useCurrentUser();
-  const { mutate: updateUser, isPending: isUpdating } =
-    useUpdateUser();
-  const { mutate: uploadPicture } =
-    useUploadProfilePicture();
+import {
+  useState,
+  useEffect
+} from "react";
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("");
+export const UserPage: React.FC =
+() =>
+{
+  const {
+    data: user,
+    isPending
+  } =
+  useCurrentUser();
+
+  const {
+    mutate: updateUser,
+    isPending: isUpdating
+  } =
+  useUpdateUser();
+
+  const [
+    isEditing,
+    setIsEditing
+  ] =
+  useState(false);
+
+  const [
+    name,
+    setName
+  ] =
+  useState("");
+
+  useEffect(() =>
+  {
+    if (!user) return;
+
+    setName(
+      user.name ?? ""
+    );
+
+  }, [user]);
 
   if (isPending)
     return (
-      <div className="text-center py-12">
-        Loading user...
-      </div>
+      <DashboardLayout>
+        <div className="text-center py-12 text-slate-700 dark:text-slate-300">
+          Loading user...
+        </div>
+      </DashboardLayout>
     );
 
-  const handleEdit = () => {
-    setName(user?.name || "");
-    setIsEditing(true);
-  };
+  const firstLetter =
+    user?.name?.charAt(0).toUpperCase() || "U";
 
-  const handleSave = () => {
+  const handleSave =
+  () =>
+  {
     updateUser(
       { name },
       {
-        onSuccess: () => {
+        onSuccess:
+        () =>
+        {
           setIsEditing(false);
-        },
+        }
       }
     );
   };
 
-  const handlePictureUpload = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) uploadPicture(file);
-  };
-
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto text-slate-900 dark:text-white">
+
         <h1 className="text-3xl font-bold mb-8">
           User Profile
         </h1>
 
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8">
+
           <div className="flex items-center gap-6 mb-8">
-            <div className="relative">
-              <img
-                src={
-                  user?.profilePicture ||
-                  "https://via.placeholder.com/100"
-                }
-                alt="Profile"
-                className="w-24 h-24 rounded-full"
-              />
 
-              <label
-                htmlFor="picture-input"
-                className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 cursor-pointer"
-              >
-                📷
-              </label>
-
-              <input
-                id="picture-input"
-                type="file"
-                accept="image/*"
-                onChange={handlePictureUpload}
-                className="hidden"
-              />
+            <div className="w-20 h-20 flex items-center justify-center rounded-full bg-blue-600 text-white text-3xl font-bold shadow">
+              {firstLetter}
             </div>
 
             <div>
+
               <h2 className="text-2xl font-bold">
                 {user?.name}
               </h2>
 
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-300">
                 {user?.email}
               </p>
 
               <p className="text-sm text-slate-400">
                 Role: {user?.role}
               </p>
+
             </div>
+
           </div>
 
           {!isEditing ? (
+
             <button
-              onClick={handleEdit}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg"
+              onClick={() =>
+                setIsEditing(true)
+              }
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Edit Name
             </button>
+
           ) : (
+
             <div className="space-y-4">
+
               <input
                 type="text"
                 value={name}
                 onChange={(e) =>
-                  setName(e.target.value)
+                  setName(
+                    e.target.value
+                  )
                 }
-                className="w-full px-4 py-2 border rounded-lg"
+                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg"
               />
 
               <div className="flex gap-4">
+
                 <button
                   onClick={handleSave}
                   disabled={isUpdating}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   {isUpdating
                     ? "Saving..."
@@ -129,14 +149,19 @@ export const UserPage: React.FC = () => {
                   onClick={() =>
                     setIsEditing(false)
                   }
-                  className="px-6 py-2 bg-slate-600 text-white rounded-lg"
+                  className="px-6 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700"
                 >
                   Cancel
                 </button>
+
               </div>
+
             </div>
+
           )}
+
         </div>
+
       </div>
     </DashboardLayout>
   );
