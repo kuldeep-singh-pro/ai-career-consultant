@@ -97,25 +97,45 @@ export const analyzeMessageIntent = async (message: string) => {
   return analyzeUserIntent(message);
 };
 
-export const getChatSessions = async (userId: Types.ObjectId | string) => {
+export const getChatSessions = async (
+  userId: Types.ObjectId | string
+) => {
   return ChatMessage.aggregate([
-    { $match: { userId: new Types.ObjectId(userId as string) } },
+    {
+      $match: {
+        userId: new Types.ObjectId(
+          userId as string
+        ),
+        messageType: "user",
+      },
+    },
+    {
+      $sort: { timestamp: 1 },
+    },
     {
       $group: {
         _id: "$sessionId",
-        messageCount: { $sum: 1 },
-        lastMessage: { $max: "$timestamp" },
-        firstMessage: { $min: "$timestamp" },
+        firstMessage: {
+          $first: "$message",
+        },
+        lastMessage: {
+          $max: "$timestamp",
+        },
+        messageCount: {
+          $sum: 1,
+        },
       },
     },
     {
       $project: {
         sessionId: "$_id",
+        title: "$firstMessage",
         messageCount: 1,
         lastMessage: 1,
-        firstMessage: 1,
       },
     },
-    { $sort: { lastMessage: -1 } },
+    {
+      $sort: { lastMessage: -1 },
+    },
   ]);
 };

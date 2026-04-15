@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + "/api",
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
@@ -10,26 +10,49 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token");
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const publicRoutes = [
+      "/auth/login",
+      "/auth/register",
+      "/auth/verify-otp",
+      "/auth/resend-otp",
+      "/auth/forgot-password",
+      "/auth/verify-reset-otp",
+      "/auth/reset-password",
+    ];
+
+    const isPublicRoute =
+      publicRoutes.some((route) =>
+        config.url?.includes(route)
+      );
+
+    if (token && !isPublicRoute) {
+      config.headers.Authorization =
+        `Bearer ${token}`;
     }
 
     return config;
-  },
-  (error) => Promise.reject(error)
+  }
 );
 
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (
+      error.response?.status === 401
+    ) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
-      if (!window.location.pathname.includes("login")) {
-        window.location.href = "/login";
+      if (
+        !window.location.pathname.includes(
+          "login"
+        )
+      ) {
+        window.location.href =
+          "/login";
       }
     }
 

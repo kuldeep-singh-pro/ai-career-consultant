@@ -103,13 +103,13 @@ export const getCareerPathDetailController = asyncHandler(
 export const updateProgressController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
-    const { progress } = req.body;
 
-    const updated = await updateCareerPathProgress(id, progress);
+    const updated =
+      await updateCareerPathProgress(id);
 
     return successResponse(
       res,
-      "Career path progress updated successfully",
+      "Progress updated successfully",
       updated
     );
   }

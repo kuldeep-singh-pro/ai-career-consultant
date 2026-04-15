@@ -4,8 +4,6 @@ export interface User {
   name: string;
   role: 'user' | 'admin';
   profilePicture?: string;
-  bio?: string;
-  phone?: string;
 }
 
 export interface AuthResponse {
@@ -39,7 +37,7 @@ export interface RegisterRequest {
 
 export interface ResetPasswordRequest {
   email: string;
-  newPassword: string;
+  password: string;
 }
 
 export interface Resume {
@@ -66,12 +64,15 @@ export interface ResumeAnalysis {
 export interface SkillGap {
   id: string;
   userId: string;
-  analysis: {
-    currentSkills: string[];
-    requiredSkills: string[];
-    gapAnalysis: string[];
-    recommendations: string[];
-  };
+  targetRole: string;
+  currentSkills: string[];
+  missingSkills: string[];
+  matchPercentage: number;
+  learningPlan: {
+    skill: string;
+    priority: string;
+    weeks: number;
+  }[];
   createdAt: string;
   updatedAt: string;
 }
@@ -81,10 +82,8 @@ export interface CareerPath {
   userId: string;
   title: string;
   description: string;
-  steps: CareerStep[];
-  timeline: string;
-  resources: string[];
-  estimatedDuration: string;
+  milestones: Milestone[];
+  progress: number;
   createdAt: string;
 }
 
@@ -140,21 +139,6 @@ export interface MentorSession {
   messageCount: number;
 }
 
-export interface Profile {
-  id: string;
-  userId: string;
-  bio: string;
-  phone: string;
-  location: string;
-  profilePicture: string;
-  linkedinUrl?: string;
-  githubUrl?: string;
-  portfolioUrl?: string;
-  resumeUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface UserSettings {
   id: string;
   userId: string;
@@ -172,13 +156,36 @@ export interface UserSettings {
 }
 
 export interface DashboardStats {
-  totalResumes: number;
-  totalAnalysis: number;
-  skillGapsIdentified: number;
-  careerPathsCreated: number;
-  milestonesReached: number;
-  mentorInteractions: number;
-  overallProgress: number;
+  resume: {
+    hasResume: boolean;
+    skillsCount: number;
+    lastAnalyzed?: string;
+  };
+
+  skillGap: {
+    hasAnalysis: boolean;
+    matchPercentage: number;
+    missingSkillsCount: number;
+    lastAnalyzed?: string;
+  };
+
+  career: {
+    totalPaths: number;
+    activePaths: number;
+    completedPaths: number;
+    overallProgress: number;
+    resourceProgress: number;
+  };
+
+  mentor: {
+    totalConversations: number;
+    lastConversation?: string;
+  };
+
+  settings: {
+    isConfigured: boolean;
+    theme: string;
+  };
 }
 
 export interface ApiResponse<T> {

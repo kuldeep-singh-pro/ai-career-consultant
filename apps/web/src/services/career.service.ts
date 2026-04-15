@@ -1,92 +1,25 @@
 import axiosInstance from "../api/axiosInstance";
-import { CareerPath, Roadmap } from "../types";
 
 export const careerService = {
-  async generateCareerPath(payload: any) {
-    const response = await axiosInstance.post<{
-      success: boolean;
-      data: CareerPath;
-    }>("/career/generate", payload);
-
-    return response.data.data;
-  },
-
   async generateQuickCareerPath() {
-    const response = await axiosInstance.post<{
-      success: boolean;
-      data: CareerPath;
-    }>("/career/generate-quick");
-
-    return response.data.data;
-  },
-
-  async getCareerPaths() {
-    const response = await axiosInstance.get<{
-      success: boolean;
-      data: CareerPath[];
-    }>("/career/all");
+    const response = await axiosInstance.post(
+      "/career/generate-quick"
+    );
 
     return response.data.data;
   },
 
   async getCareerPathsWithProgress() {
-    const response = await axiosInstance.get<{
-      success: boolean;
-      data: CareerPath[];
-    }>("/career/all-with-progress");
-
-    return response.data.data;
-  },
-
-  async getLatestCareerPath() {
-    const response = await axiosInstance.get<{
-      success: boolean;
-      data: CareerPath;
-    }>("/career/latest");
+    const response = await axiosInstance.get(
+      "/career/all-with-progress"
+    );
 
     return response.data.data;
   },
 
   async getCareerPath(pathId: string) {
-    const response = await axiosInstance.get<{
-      success: boolean;
-      data: CareerPath;
-    }>(`/career/${pathId}`);
-
-    return response.data.data;
-  },
-
-  async updateProgress(pathId: string, progress: number) {
-    const response = await axiosInstance.patch(
-      `/career/${pathId}/progress`,
-      { progress }
-    );
-
-    return response.data.data;
-  },
-
-  async updateMilestone(pathId: string, milestoneId: string) {
-    const response = await axiosInstance.patch(
-      `/career/${pathId}/milestone`,
-      { milestoneId }
-    );
-
-    return response.data.data;
-  },
-
-  async updateResource(pathId: string, resourceId: string) {
-    const response = await axiosInstance.patch(
-      `/career/${pathId}/resource`,
-      { resourceId }
-    );
-
-    return response.data.data;
-  },
-
-  async updateStatus(pathId: string, status: string) {
-    const response = await axiosInstance.patch(
-      `/career/${pathId}/status`,
-      { status }
+    const response = await axiosInstance.get(
+      `/career/${pathId}`
     );
 
     return response.data.data;
@@ -100,11 +33,58 @@ export const careerService = {
     return response.data.data;
   },
 
-  async generateRoadmap(payload: any) {
-    const response = await axiosInstance.post<{
-      success: boolean;
-      data: Roadmap;
-    }>("/career/roadmap/generate", payload);
+  async updateMilestone(
+    careerPathId: string,
+    milestoneIndex: number,
+    completed: boolean
+  ) {
+    const response = await axiosInstance.patch(
+      `/career/${careerPathId}/milestone`,
+      {
+        milestoneIndex,
+        completed,
+      }
+    );
+
+    return response.data.data;
+  },
+
+  async updateResource(
+    careerPathId: string,
+    resourceIndex: number,
+    completed: boolean
+  ) {
+    const response = await axiosInstance.patch(
+      `/career/${careerPathId}/resource`,
+      {
+        resourceIndex,
+        completed,
+      }
+    );
+
+    return response.data.data;
+  },
+
+  async updateStatus(
+    careerPathId: string,
+    status: string
+  ) {
+    const response = await axiosInstance.patch(
+      `/career/${careerPathId}/status`,
+      { status }
+    );
+
+    return response.data.data;
+  },
+
+  async refreshProgress(
+    careerPathId: string,
+    progress: number
+  ) {
+    const response = await axiosInstance.patch(
+      `/career/${careerPathId}/progress`,
+      { progress }
+    );
 
     return response.data.data;
   },

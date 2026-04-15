@@ -1,141 +1,263 @@
-import { useState, useRef, useEffect } from 'react';
-import { DashboardLayout } from '../layouts/DashboardLayout';
-import { useMentorSessions, useCreateMentorSession, useMentorHistory, useSendMessage } from '../hooks/useMentor';
+import {
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 
-export const MentorChatPage: React.FC = () => {
-  const [message, setMessage] = useState('');
-  const [selectedSessionId, setSelectedSessionId] = useState<string>('');
-  const [newTopic, setNewTopic] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+import { DashboardLayout } from "../layouts/DashboardLayout";
 
-  const { data: sessions, isPending: sessionsLoading, refetch: refetchSessions } = useMentorSessions();
-  const { data: history = [], isPending: historyLoading } = useMentorHistory(selectedSessionId, 50, !!selectedSessionId);
-  const { mutate: createSession, isPending: isCreatingSession } = useCreateMentorSession();
-  const { mutate: sendMutate, isPending: isSending } = useSendMessage();
+import {
+  useMentorSessions,
+  useMentorHistory,
+  useSendMessage,
+} from "../hooks/useMentor";
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [history]);
+export const MentorChatPage: React.FC =
+  () => {
+    const [
+      selectedSessionId,
+      setSelectedSessionId,
+    ] = useState("");
 
-  const handleCreateSession = () => {
-    if (!newTopic.trim()) return;
-    createSession(newTopic, {
-      onSuccess: (data: any) => {
-        setSelectedSessionId(data.id);
-        setNewTopic('');
-        refetchSessions();
-      },
-    });
-  };
+    const [
+      tempTitles,
+      setTempTitles,
+    ] = useState<
+      Record<string, string>
+    >({});
 
-  const handleSendMessage = () => {
-    if (!message.trim() || !selectedSessionId) return;
-    sendMutate(
-      { sessionId: selectedSessionId, message },
-      {
-        onSuccess: () => {
-          setMessage('');
-        },
-      }
+    const [message, setMessage] =
+      useState("");
+
+    const messagesEndRef =
+      useRef<HTMLDivElement>(null);
+
+    const {
+      data: sessions,
+      refetch: refetchSessions,
+    } = useMentorSessions();
+
+    const {
+      data: history = [],
+      refetch: refetchHistory,
+    } = useMentorHistory(
+      selectedSessionId,
+      50,
+      !!selectedSessionId
     );
-  };
 
-  if (sessionsLoading) return <div className="text-center py-12">Loading mentor chat...</div>;
+    const {
+      mutate: sendMessage,
+      isPending,
+    } = useSendMessage();
 
-  return (
-    <DashboardLayout>
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">AI Mentor Chat</h1>
+    useEffect(() => {
+      messagesEndRef.current?.scrollIntoView(
+        {
+          behavior: "smooth",
+        }
+      );
+    }, [history]);
 
-        <div className="flex gap-6 h-[600px]">
-          <div className="w-64 bg-white dark:bg-slate-800 rounded-lg shadow-md flex flex-col">
-            <div className="p-4 border-b dark:border-slate-700">
-              <h2 className="font-bold mb-3">Sessions</h2>
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  value={newTopic}
-                  onChange={(e) => setNewTopic(e.target.value)}
-                  placeholder="New topic..."
-                  className="w-full px-2 py-1 border border-slate-300 dark:border-slate-600 rounded text-sm"
-                />
+    const startNewChat = () => {
+      const id =
+        "session_" + Date.now();
+
+      setSelectedSessionId(id);
+
+      setTempTitles((prev) => ({
+        ...prev,
+        [id]: "New Conversation",
+      }));
+    };
+
+    const handleSendMessage = () => {
+      if (!message.trim())
+        return;
+
+      if (
+        !tempTitles[
+          selectedSessionId
+        ]
+      ) {
+        setTempTitles((prev) => ({
+          ...prev,
+          [selectedSessionId]:
+            message.slice(0, 40),
+        }));
+      }
+
+      sendMessage(
+        {
+          sessionId:
+            selectedSessionId,
+          message,
+        },
+        {
+          onSuccess: () => {
+            setMessage("");
+
+            refetchSessions();
+
+            refetchHistory();
+          },
+        }
+      );
+    };
+
+    const getSessionTitle = (
+      session: any
+    ) => {
+      if (session.title)
+        return session.title.slice(
+          0,
+          40
+        );
+
+      if (
+        tempTitles[
+          session.sessionId
+        ]
+      )
+        return tempTitles[
+          session.sessionId
+        ];
+
+      return "New Conversation";
+    };
+
+    return (
+      <DashboardLayout>
+        <div className="max-w-7xl mx-auto h-[82vh] flex flex-col">
+          <h1 className="text-3xl font-bold mb-6">
+            AI Mentor
+          </h1>
+
+          <div className="flex flex-1 gap-6">
+            <div className="w-72 bg-white border rounded-xl shadow-sm flex flex-col">
+              <div className="p-4 border-b">
                 <button
-                  onClick={handleCreateSession}
-                  disabled={isCreatingSession || !newTopic.trim()}
-                  className="w-full px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:bg-slate-400"
+                  onClick={
+                    startNewChat
+                  }
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition"
                 >
-                  {isCreatingSession ? 'Creating...' : 'New Session'}
+                  + New Chat
                 </button>
               </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
-              {sessions?.map((session: any) => (
-                <button
-                  key={session.id}
-                  onClick={() => setSelectedSessionId(session.id)}
-                  className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                    selectedSessionId === session.id
-                      ? 'bg-blue-600 text-white'
-                      : 'hover:bg-slate-100 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {session.topic}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          <div className="flex-1 bg-white dark:bg-slate-800 rounded-lg shadow-md flex flex-col">
-            {!selectedSessionId ? (
-              <div className="flex-1 flex items-center justify-center text-slate-600 dark:text-slate-400">
-                Select or create a session to start chatting
+              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                {sessions?.map(
+                  (session: any) => (
+                    <button
+                      key={
+                        session.sessionId
+                      }
+                      onClick={() =>
+                        setSelectedSessionId(
+                          session.sessionId
+                        )
+                      }
+                      className={`w-full text-left px-4 py-2 rounded-lg text-sm transition ${
+                        selectedSessionId ===
+                        session.sessionId
+                          ? "bg-blue-600 text-white shadow"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {getSessionTitle(
+                        session
+                      )}
+                    </button>
+                  )
+                )}
               </div>
-            ) : (
-              <>
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {historyLoading ? (
-                    <div className="text-center">Loading messages...</div>
-                  ) : history.length === 0 ? (
-                    <div className="text-center text-slate-600 dark:text-slate-400">No messages yet</div>
-                  ) : (
-                    history.map((msg: any) => (
-                      <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+            </div>
+
+            <div className="flex-1 bg-white border rounded-xl shadow-sm flex flex-col">
+              {!selectedSessionId ? (
+                <div className="flex flex-1 items-center justify-center text-gray-500 text-lg">
+                  Start a new chat with AI Mentor
+                </div>
+              ) : (
+                <>
+                  <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                    {history.map(
+                      (
+                        msg: any,
+                        index: number
+                      ) => (
                         <div
-                          className={`max-w-xs px-4 py-2 rounded-lg ${
-                            msg.sender === 'user'
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100'
+                          key={
+                            index
+                          }
+                          className={`flex ${
+                            msg.messageType ===
+                            "user"
+                              ? "justify-end"
+                              : "justify-start"
                           }`}
                         >
-                          {msg.message}
+                          <div
+                            className={`px-5 py-3 rounded-xl max-w-[70%] text-sm leading-relaxed shadow-sm ${
+                              msg.messageType ===
+                              "user"
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {msg.messageType ===
+                            "user"
+                              ? msg.message
+                              : msg.response}
+                          </div>
                         </div>
-                      </div>
-                    ))
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-                <div className="p-4 border-t dark:border-slate-700 flex gap-2">
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="Type your message..."
-                    className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={isSending || !message.trim()}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-400"
-                  >
-                    Send
-                  </button>
-                </div>
-              </>
-            )}
+                      )
+                    )}
+
+                    <div
+                      ref={
+                        messagesEndRef
+                      }
+                    />
+                  </div>
+
+                  <div className="border-t p-4 flex gap-3">
+                    <input
+                      value={
+                        message
+                      }
+                      onChange={(e) =>
+                        setMessage(
+                          e.target.value
+                        )
+                      }
+                      onKeyDown={(e) =>
+                        e.key ===
+                          "Enter" &&
+                        handleSendMessage()
+                      }
+                      placeholder="Ask mentor anything about career, skills, roadmap..."
+                      className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+
+                    <button
+                      onClick={
+                        handleSendMessage
+                      }
+                      disabled={
+                        isPending
+                      }
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg transition disabled:opacity-50"
+                    >
+                      Send
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </DashboardLayout>
-  );
-};
+      </DashboardLayout>
+    );
+  };

@@ -2,11 +2,13 @@ import axiosInstance from "../api/axiosInstance";
 import { SkillGap } from "../types";
 
 export const skillGapService = {
-  async generateSkillGap(payload: any) {
+  async generateSkillGap(targetRole: string) {
     const response = await axiosInstance.post<{
       success: boolean;
       data: SkillGap;
-    }>("/skillgap/analyze", payload);
+    }>("/skillgap/analyze", {
+      targetRole,
+    });
 
     return response.data.data;
   },
