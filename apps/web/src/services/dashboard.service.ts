@@ -33,7 +33,7 @@ export const dashboardService = {
     const response = await axiosInstance.get<{
       success: boolean;
       data: any;
-    }>("/dashboard/skills");
+    }>("/dashboard/skills");  
 
     return response.data.data;
   },

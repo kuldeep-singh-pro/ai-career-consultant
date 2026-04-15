@@ -1,50 +1,102 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { mentorService } from '../services/mentor.service';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import { mentorService } from "../services/mentor.service";
 
 export const useSendMessage = () => {
-  const queryClient = useQueryClient();
+  const queryClient =
+    useQueryClient();
+
   return useMutation({
-    mutationFn: ({ sessionId, message }: { sessionId: string; message: string }) =>
-      mentorService.sendMessage(sessionId, message),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mentor', 'history'] });
+    mutationFn: ({
+      sessionId,
+      message,
+    }: {
+      sessionId: string;
+      message: string;
+    }) =>
+      mentorService.sendMessage(
+        sessionId,
+        message
+      ),
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          "mentor",
+          "history",
+          variables.sessionId,
+        ],
+      });
     },
   });
 };
 
-export const useMentorHistory = (sessionId: string, limit: number = 50, enabled: boolean = true) => {
+export const useMentorHistory = (
+  sessionId: string,
+  limit: number = 50,
+  enabled: boolean = true
+) => {
   return useQuery({
-    queryKey: ['mentor', 'history', sessionId],
-    queryFn: () => mentorService.getMessageHistory(sessionId, limit),
-    enabled: enabled && !!sessionId,
+    queryKey: [
+      "mentor",
+      "history",
+      sessionId,
+    ],
+    queryFn: () =>
+      mentorService.getMessageHistory(
+        sessionId,
+        limit
+      ),
+    enabled:
+      enabled && !!sessionId,
   });
 };
 
-export const useMentorSessions = (enabled: boolean = true) => {
+export const useMentorSessions = (
+  enabled: boolean = true
+) => {
   return useQuery({
-    queryKey: ['mentor', 'sessions'],
-    queryFn: () => mentorService.getSessions(),
+    queryKey: [
+      "mentor",
+      "sessions",
+    ],
+    queryFn:
+      mentorService.getSessions,
     enabled,
   });
 };
 
-export const useCreateMentorSession = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (topic: string) => mentorService.createSession(topic),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mentor', 'sessions'] });
-    },
-  });
-};
+export const useClearMentorSession =
+  () => {
+    const queryClient =
+      useQueryClient();
 
-export const useClearMentorSession = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (sessionId: string) => mentorService.clearSession(sessionId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mentor', 'sessions'] });
-      queryClient.invalidateQueries({ queryKey: ['mentor', 'history'] });
-    },
-  });
-};
+    return useMutation({
+      mutationFn:
+        mentorService.clearSession,
+
+      onSuccess: () => {
+        queryClient.invalidateQueries(
+          {
+            queryKey: [
+              "mentor",
+              "sessions",
+            ],
+          }
+        );
+
+        queryClient.invalidateQueries(
+          {
+            queryKey: [
+              "mentor",
+              "history",
+            ],
+          }
+        );
+      },
+    });
+  };

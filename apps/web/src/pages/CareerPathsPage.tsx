@@ -1,48 +1,141 @@
-import { DashboardLayout } from '../layouts/DashboardLayout';
-import { useCareerPaths, useGenerateCareerPath } from '../hooks/useCareer';
-import { useNavigate } from 'react-router-dom';
+import { DashboardLayout } from "../layouts/DashboardLayout";
 
-export const CareerPathsPage: React.FC = () => {
-  const { data: careerPaths, isPending } = useCareerPaths();
-  const { mutate: generateCareerPath, isPending: isGenerating } = useGenerateCareerPath();
-  const navigate = useNavigate();
+import {
+  useCareerPaths,
+  useGenerateCareerPath,
+  useDeleteCareerPath,
+} from "../hooks/useCareer";
 
-  if (isPending) return <div className="text-center py-12">Loading career paths...</div>;
+import { useNavigate } from "react-router-dom";
 
-  return (
-    <DashboardLayout>
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Career Paths</h1>
-          <button
-            onClick={() => generateCareerPath()}
-            disabled={isGenerating}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-400"
-          >
-            {isGenerating ? 'Generating...' : 'Generate New Path'}
-          </button>
+export const CareerPathsPage: React.FC =
+  () => {
+    const {
+      data: careerPaths,
+      isPending,
+    } = useCareerPaths();
+
+    const {
+      mutate: generateCareerPath,
+      isPending: isGenerating,
+    } = useGenerateCareerPath();
+
+    const {
+      mutate: deleteCareerPath,
+    } = useDeleteCareerPath();
+
+    const navigate =
+      useNavigate();
+
+    if (isPending)
+      return (
+        <div className="text-center py-12">
+          Loading career paths...
         </div>
+      );
 
-        {(!careerPaths || careerPaths.length === 0) ? (
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-8 text-center">
-            <p className="text-slate-600 dark:text-slate-400">No career paths yet</p>
+    return (
+      <DashboardLayout>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold">
+              Career Paths
+            </h1>
+
+            <button
+              onClick={() =>
+                generateCareerPath()
+              }
+              disabled={isGenerating}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg"
+            >
+              {isGenerating
+                ? "Generating..."
+                : "Generate New Path"}
+            </button>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {careerPaths.map((path) => (
-              <div key={path.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => navigate(`/career-paths/${path.id}`)}>
-                <h3 className="text-xl font-bold mb-2">{path.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">{path.description}</p>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">Duration: {path.estimatedDuration}</span>
-                  <span className="text-blue-600">{path.steps?.length || 0} steps</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </DashboardLayout>
-  );
-};
+
+          {!careerPaths ||
+          careerPaths.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-md p-8 text-center">
+              No career paths yet
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {careerPaths.map(
+                (path: any) => (
+                  <div
+                    key={path._id}
+                    className="bg-white rounded-lg shadow-md p-6"
+                  >
+                    <div
+                      className="cursor-pointer"
+                      onClick={() =>
+                        navigate(
+                          `/career-paths/${path._id}`
+                        )
+                      }
+                    >
+                      <h3 className="text-xl font-bold mb-2">
+                        {
+                          path.targetRole
+                        }
+                      </h3>
+
+                      <p className="text-sm mb-2">
+                        Current Role:{" "}
+                        {
+                          path.currentRole
+                        }
+                      </p>
+
+                      <p className="text-sm mb-2">
+                        Match:{" "}
+                        {
+                          path.matchPercentage
+                        }
+                        %
+                      </p>
+
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                        <div
+                          className="bg-green-500 h-2 rounded-full"
+                          style={{
+                            width: `${
+                              path.totalProgress ??
+                              0
+                            }%`,
+                          }}
+                        />
+                      </div>
+
+                      <p className="text-xs text-right mt-1">
+                        {Math.round(
+                          path.totalProgress ??
+                            0
+                        )}
+                        %
+                      </p>
+                    </div>
+
+                    <div className="flex justify-end mt-4">
+                      <button
+                        onClick={() =>
+                          deleteCareerPath(
+                            path._id
+                          )
+                        }
+                        className="px-4 py-1 text-sm bg-red-500 text-white rounded"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+          )}
+        </div>
+      </DashboardLayout>
+    );
+  };

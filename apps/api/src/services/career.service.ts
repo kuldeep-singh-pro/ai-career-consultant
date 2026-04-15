@@ -27,129 +27,257 @@ export interface CareerPathInput {
   }[];
 }
 
-export const createCareerPath = async (careerPathData: CareerPathInput) => {
-  const careerPath = await CareerPathModel.create({
-    ...careerPathData,
-    milestones: careerPathData.milestones.map((m) => ({
-      ...m,
-      completed: false,
-    })),
-    learningResources: careerPathData.learningResources.map((r) => ({
-      ...r,
-      completed: false,
-    })),
-  });
+const calculateProgress = (careerPath: any) => {
+  const totalMilestones = careerPath.milestones?.length || 0;
+
+  const completedMilestones =
+    careerPath.milestones?.filter(
+      (m: any) => m.completed
+    ).length || 0;
+
+  const totalResources =
+    careerPath.learningResources?.length || 0;
+
+  const completedResources =
+    careerPath.learningResources?.filter(
+      (r: any) => r.completed
+    ).length || 0;
+
+  const milestonesProgress =
+    totalMilestones > 0
+      ? (completedMilestones /
+          totalMilestones) *
+        100
+      : 0;
+
+  const resourcesProgress =
+    totalResources > 0
+      ? (completedResources /
+          totalResources) *
+        100
+      : 0;
+
+  return Math.round(
+    (milestonesProgress +
+      resourcesProgress) /
+      2
+  );
+};
+
+export const createCareerPath = async (
+  careerPathData: CareerPathInput
+) => {
+  const careerPath =
+    await CareerPathModel.create({
+      ...careerPathData,
+      milestones:
+        careerPathData.milestones.map(
+          (m) => ({
+            ...m,
+            completed: false,
+          })
+        ),
+      learningResources:
+        careerPathData.learningResources.map(
+          (r) => ({
+            ...r,
+            completed: false,
+          })
+        ),
+      progress: 0,
+    });
+
   return careerPath;
 };
 
-export const getCareerPathsByUserId = async (
-  userId: Types.ObjectId | string
-) => {
-  return CareerPathModel.find({ userId })
-    .sort({ createdAt: -1 })
-    .lean();
-};
+export const getCareerPathsByUserId =
+  async (
+    userId: Types.ObjectId | string
+  ) => {
+    return CareerPathModel.find({
+      userId,
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+  };
 
-export const getLatestCareerPath = async (
-  userId: Types.ObjectId | string
-) => {
-  return CareerPathModel.findOne({ userId })
-    .sort({ createdAt: -1 })
-    .lean();
-};
+export const getLatestCareerPath =
+  async (
+    userId: Types.ObjectId | string
+  ) => {
+    return CareerPathModel.findOne({
+      userId,
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+  };
 
-export const getCareerPathById = async (id: string) => {
-  return CareerPathModel.findById(id).lean();
-};
-
-export const updateCareerPathProgress = async (
-  id: string,
-  progress: number
+export const getCareerPathById = async (
+  id: string
 ) => {
-  return CareerPathModel.findByIdAndUpdate(
-    id,
-    { progress },
-    { new: true }
+  return CareerPathModel.findById(
+    id
   ).lean();
 };
 
-export const updateMilestoneCompletion = async (
-  careerPathId: string,
-  milestoneIndex: number,
-  completed: boolean
-) => {
-  const careerPath = await CareerPathModel.findById(careerPathId);
-  
-  if (!careerPath) {
-    throw new Error("Career path not found");
-  }
+export const updateCareerPathProgress =
+  async (id: string) => {
+    const careerPath =
+      await CareerPathModel.findById(id);
 
-  if (careerPath.milestones[milestoneIndex]) {
-    careerPath.milestones[milestoneIndex].completed = completed;
+    if (!careerPath)
+      throw new Error(
+        "Career path not found"
+      );
+
+    careerPath.progress =
+      calculateProgress(careerPath);
+
     await careerPath.save();
-  }
 
-  return careerPath;
-};
+    return careerPath;
+  };
 
-export const updateResourceCompletion = async (
-  careerPathId: string,
-  resourceIndex: number,
-  completed: boolean
-) => {
-  const careerPath = await CareerPathModel.findById(careerPathId);
-  
-  if (!careerPath) {
-    throw new Error("Career path not found");
-  }
+export const updateMilestoneCompletion =
+  async (
+    careerPathId: string,
+    milestoneIndex: number,
+    completed: boolean
+  ) => {
+    const careerPath =
+      await CareerPathModel.findById(
+        careerPathId
+      );
 
-  if (careerPath.learningResources[resourceIndex]) {
-    careerPath.learningResources[resourceIndex].completed = completed;
+    if (!careerPath)
+      throw new Error(
+        "Career path not found"
+      );
+
+    if (
+      careerPath.milestones[
+        milestoneIndex
+      ]
+    ) {
+      careerPath.milestones[
+        milestoneIndex
+      ].completed = completed;
+    }
+
+    careerPath.progress =
+      calculateProgress(careerPath);
+
     await careerPath.save();
-  }
 
-  return careerPath;
-};
+    return careerPath;
+  };
 
-export const updateCareerPathStatus = async (
-  id: string,
-  status: "active" | "completed" | "paused"
+export const updateResourceCompletion =
+  async (
+    careerPathId: string,
+    resourceIndex: number,
+    completed: boolean
+  ) => {
+    const careerPath =
+      await CareerPathModel.findById(
+        careerPathId
+      );
+
+    if (!careerPath)
+      throw new Error(
+        "Career path not found"
+      );
+
+    if (
+      careerPath.learningResources[
+        resourceIndex
+      ]
+    ) {
+      careerPath.learningResources[
+        resourceIndex
+      ].completed = completed;
+    }
+
+    careerPath.progress =
+      calculateProgress(careerPath);
+
+    await careerPath.save();
+
+    return careerPath;
+  };
+
+export const updateCareerPathStatus =
+  async (
+    id: string,
+    status:
+      | "active"
+      | "completed"
+      | "paused"
+  ) => {
+    return CareerPathModel.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    ).lean();
+  };
+
+export const deleteCareerPath = async (
+  id: string
 ) => {
-  return CareerPathModel.findByIdAndUpdate(
-    id,
-    { status },
-    { new: true }
-  ).lean();
+  return CareerPathModel.findByIdAndDelete(
+    id
+  );
 };
 
-export const deleteCareerPath = async (id: string) => {
-  return CareerPathModel.findByIdAndDelete(id);
-};
+export const getUserCareerPathsWithProgress =
+  async (
+    userId: Types.ObjectId | string
+  ) => {
+    const careerPaths =
+      await CareerPathModel.find({
+        userId,
+      }).lean();
 
-export const getUserCareerPathsWithProgress = async (
-  userId: Types.ObjectId | string
-) => {
-  const careerPaths = await CareerPathModel.find({ userId }).lean();
-  
-  return careerPaths.map((path: any) => {
-    const totalMilestones = path.milestones?.length || 0;
-    const completedMilestones =
-      path.milestones?.filter((m: any) => m.completed).length || 0;
+    return careerPaths.map((path: any) => {
+      const totalMilestones =
+        path.milestones?.length || 0;
 
-    const totalResources = path.learningResources?.length || 0;
-    const completedResources =
-      path.learningResources?.filter((r: any) => r.completed).length || 0;
+      const completedMilestones =
+        path.milestones?.filter(
+          (m: any) => m.completed
+        ).length || 0;
 
-    const milestonesProgress =
-      totalMilestones > 0 ? (completedMilestones / totalMilestones) * 100 : 0;
-    const resourcesProgress =
-      totalResources > 0 ? (completedResources / totalResources) * 100 : 0;
+      const totalResources =
+        path.learningResources
+          ?.length || 0;
 
-    return {
-      ...path,
-      milestonesProgress,
-      resourcesProgress,
-      totalProgress: (milestonesProgress + resourcesProgress) / 2,
-    };
-  });
-};
+      const completedResources =
+        path.learningResources?.filter(
+          (r: any) => r.completed
+        ).length || 0;
+
+      const milestonesProgress =
+        totalMilestones > 0
+          ? (completedMilestones /
+              totalMilestones) *
+            100
+          : 0;
+
+      const resourcesProgress =
+        totalResources > 0
+          ? (completedResources /
+              totalResources) *
+            100
+          : 0;
+
+      return {
+        ...path,
+        milestonesProgress,
+        resourcesProgress,
+        totalProgress:
+          (milestonesProgress +
+            resourcesProgress) /
+          2,
+      };
+    });
+  };
