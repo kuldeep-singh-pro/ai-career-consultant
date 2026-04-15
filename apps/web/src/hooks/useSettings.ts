@@ -1,44 +1,89 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { settingsService } from '../services/settings.service';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient
+} from "@tanstack/react-query";
 
-export const useSettings = (enabled: boolean = true) => {
+import {
+  settingsService
+} from "../services/settings.service";
+
+export const useSettings =
+(
+  enabled: boolean = true
+) =>
+{
   return useQuery({
-    queryKey: ['settings'],
-    queryFn: () => settingsService.getSettings(),
-    enabled,
+    queryKey: ["settings"],
+    queryFn:
+      settingsService.getSettings,
+    enabled
   });
 };
 
-export const useUpdateSettings = () => {
-  const queryClient = useQueryClient();
+export const useUpdateSettings =
+() =>
+{
+  const queryClient =
+    useQueryClient();
+
   return useMutation({
-    mutationFn: (data: any) => settingsService.updateSettings(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings'] });
-    },
+    mutationFn:
+      settingsService.updateSettings,
+
+    onSuccess:
+      (response) =>
+      {
+        queryClient.setQueryData(
+          ["settings"],
+          response
+        );
+      }
   });
 };
 
-export const useResetSettings = () => {
-  const queryClient = useQueryClient();
+export const useResetSettings =
+() =>
+{
+  const queryClient =
+    useQueryClient();
+
   return useMutation({
-    mutationFn: () => settingsService.resetSettings(),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['settings'] });
-    },
+    mutationFn:
+      settingsService.resetSettings,
+
+    onSuccess:
+      (response) =>
+      {
+        queryClient.setQueryData(
+          ["settings"],
+          response
+        );
+      }
   });
 };
 
-export const useDeleteAccount = () => {
+export const useDeleteAccount =
+() =>
+{
   return useMutation({
-    mutationFn: () => settingsService.deleteAccount(),
+    mutationFn:
+      settingsService.deleteAccount
   });
 };
 
-export const useSettingsSummary = (enabled: boolean = true) => {
+export const useSettingsSummary =
+(
+  enabled: boolean = true
+) =>
+{
   return useQuery({
-    queryKey: ['settings', 'summary'],
-    queryFn: () => settingsService.getSummary(),
-    enabled,
+    queryKey:
+      ["settings", "summary"],
+
+    queryFn:
+      settingsService.getSummary,
+
+    enabled
   });
 };

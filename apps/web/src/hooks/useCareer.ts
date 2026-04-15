@@ -6,22 +6,20 @@ import {
 
 import { careerService } from "../services/career.service";
 
-export const useGenerateCareerPath =
-  () => {
-    const queryClient =
-      useQueryClient();
+export const useGenerateCareerPath = () => {
+  const queryClient = useQueryClient();
 
-    return useMutation({
-      mutationFn:
-        careerService.generateQuickCareerPath,
+  return useMutation({
+    mutationFn:
+      careerService.generateQuickCareerPath,
 
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["career", "paths"],
-        });
-      },
-    });
-  };
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["career", "paths"],
+      });
+    },
+  });
+};
 
 export const useCareerPaths = (
   enabled: boolean = true
@@ -97,12 +95,12 @@ export const useUpdateStatus = () => {
         status
       ),
 
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["career", "paths"],
-        });
-      },
-    });
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["career", "paths"],
+      });
+    },
+  });
 };
 
 export const useRefreshProgress =
@@ -129,4 +127,4 @@ export const useRefreshProgress =
         });
       },
     });
-};
+  };

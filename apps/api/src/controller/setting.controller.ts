@@ -12,44 +12,71 @@ import { AuthRequest } from "../types/auth.types";
 
 export const getSettingsController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const settings = await getUserSettings(req.user._id);
+    const settings = await getUserSettings(
+      req.user._id
+    );
 
-    return successResponse(res, "Settings retrieved successfully", settings);
+    return successResponse(
+      res,
+      "Settings retrieved successfully",
+      settings
+    );
   }
 );
 
 export const updateSettingsController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const updates = req.body;
+    const updated =
+      await updateUserSettings(
+        req.user._id,
+        req.body
+      );
 
-    const updatedSettings = await updateUserSettings(req.user._id, updates);
-
-    return successResponse(res, "Settings updated successfully", updatedSettings);
+    return successResponse(
+      res,
+      "Settings updated successfully",
+      updated
+    );
   }
 );
 
 export const resetSettingsController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const { section } = req.body;
+    const settings =
+      await resetSettings(req.user._id);
 
-    const resetResult = await resetSettings(req.user._id, section);
-
-    return successResponse(res, "Settings reset successfully", resetResult);
+    return successResponse(
+      res,
+      "Settings reset successfully",
+      settings
+    );
   }
 );
 
 export const getSettingsSummaryController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const summary = await getSettingsSummary(req.user._id);
+    const summary =
+      await getSettingsSummary(
+        req.user._id
+      );
 
-    return successResponse(res, "Settings summary retrieved successfully", summary);
+    return successResponse(
+      res,
+      "Settings summary retrieved successfully",
+      summary
+    );
   }
 );
 
 export const deleteSettingsController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    await deleteUserSettings(req.user._id);
+    await deleteUserSettings(
+      req.user._id
+    );
 
-    return successResponse(res, "Settings deleted successfully");
+    return successResponse(
+      res,
+      "Settings deleted successfully"
+    );
   }
 );
