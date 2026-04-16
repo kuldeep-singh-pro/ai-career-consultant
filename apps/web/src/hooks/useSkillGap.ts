@@ -1,23 +1,88 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { skillGapService } from "../services/skillgap.service";
+import
+{
+  useQuery,
+  useMutation,
+  useQueryClient
+}
+from "@tanstack/react-query";
 
-export const useGenerateSkillGap = () => {
-  const queryClient = useQueryClient();
+import
+{
+  skillGapService
+}
+from "../services/skillgap.service";
 
-  return useMutation({
-    mutationFn: (targetRole: string) =>
-      skillGapService.generateSkillGap(targetRole),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["skillgap"] });
-    },
+export const useSkillGap =
+(
+  enabled: boolean = true
+) =>
+{
+  return useQuery(
+  {
+    queryKey: ["skillgap"],
+
+    queryFn:
+      skillGapService.getSkillGap,
+
+    enabled,
+
+    staleTime: 0
   });
 };
 
-export const useSkillGap = (enabled: boolean = true) => {
-  return useQuery({
-    queryKey: ["skillgap"],
-    queryFn: skillGapService.getSkillGap,
-    enabled,
+
+export const useGenerateSkillGap =
+() =>
+{
+  const queryClient =
+    useQueryClient();
+
+  return useMutation(
+  {
+    mutationFn:
+      skillGapService.generateSkillGap,
+
+    onSuccess:
+      () =>
+      {
+        queryClient.removeQueries(
+        {
+          queryKey: ["skillgap"]
+        });
+
+        queryClient.invalidateQueries(
+        {
+          queryKey: ["skillgap"]
+        });
+
+        queryClient.refetchQueries(
+        {
+          queryKey: ["skillgap"]
+        });
+      }
+  });
+};
+
+
+export const useDeleteSkillGap =
+() =>
+{
+  const queryClient =
+    useQueryClient();
+
+  return useMutation(
+  {
+    mutationFn:
+      skillGapService.deleteSkillGap,
+
+    onSuccess:
+      () =>
+      {
+        queryClient.removeQueries(
+        {
+          queryKey: ["skillgap"]
+        });
+      }
   });
 };

@@ -3,6 +3,7 @@ import skillgapModel from "../models/skillgap.model";
 
 export interface SkillGapInput {
   userId: Types.ObjectId | string;
+  resumeId: Types.ObjectId | string;
   targetRole: string;
   currentSkills: string[];
   missingSkills: string[];
@@ -14,13 +15,36 @@ export interface SkillGapInput {
   }[];
 }
 
-export const createSkillGapAnalysis = async (skillGapData: SkillGapInput) => {
-  const skillGapAnalysis = await skillgapModel.create(skillGapData);
-  return skillGapAnalysis;
+export const createSkillGapAnalysis = async (
+  skillGapData: SkillGapInput
+) => {
+  await skillgapModel.deleteMany({
+    userId: skillGapData.userId,
+    resumeId: skillGapData.resumeId
+  });
+
+  return skillgapModel.create(skillGapData);
 };
 
-export const getLatestSkillGapAnalysis = async (userId: Types.ObjectId | string) => {
-  return skillgapModel.findOne({ userId })
+export const getLatestSkillGapAnalysis = async (
+  userId: Types.ObjectId | string,
+  resumeId: Types.ObjectId | string
+) => {
+  return skillgapModel
+    .findOne({
+      userId,
+      resumeId
+    })
     .sort({ createdAt: -1 })
     .lean();
+};
+
+export const deleteSkillGapAnalysis = async (
+  userId: Types.ObjectId | string,
+  resumeId: Types.ObjectId | string
+) => {
+  return skillgapModel.deleteMany({
+    userId,
+    resumeId
+  });
 };

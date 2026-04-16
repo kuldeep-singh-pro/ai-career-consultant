@@ -2,6 +2,7 @@ import mongoose, { Schema, Types } from "mongoose";
 
 export interface ISkillGap {
   userId: Types.ObjectId;
+  resumeId: Types.ObjectId;
   targetRole: string;
   currentSkills: string[];
   missingSkills: string[];
@@ -22,18 +23,18 @@ const SkillGapSchema = new Schema<ISkillGap>(
       ref: "User",
       required: true
     },
-
+    resumeId: {
+      type: Schema.Types.ObjectId,
+      ref: "Resume",
+      required: true
+    },
     targetRole: {
       type: String,
       required: true
     },
-
     currentSkills: [String],
-
     missingSkills: [String],
-
     matchPercentage: Number,
-
     learningPlan: [
       {
         skill: String,
