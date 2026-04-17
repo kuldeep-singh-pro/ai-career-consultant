@@ -19,7 +19,6 @@ export const userService = {
         return response.data.data;
     },
     async deleteAccount() {
-        const response = await axiosInstance.delete("/user/me");
-        return response.data.data;
+        await axiosInstance.delete("/user/me");
     },
 };
