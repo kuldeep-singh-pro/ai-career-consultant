@@ -1,15 +1,32 @@
 import app from "./app";
 import { connectDB } from "./config/db";
-import { env } from "./config/env";
 
 const startServer = async () => {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const PORT = process.env.PORT || env.PORT || 5000;
+    const PORT = process.env.PORT || 5000;
 
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+    const server = app.listen(PORT, () => {
+      console.log(`🚀 Production server running on port ${PORT}`);
+    });
+
+    process.on("unhandledRejection", (err: Error) => {
+      console.error(`Unhandled Rejection: ${err.message}`);
+      server.close(() => process.exit(1));
+    });
+
+    process.on("SIGTERM", () => {
+      console.log("SIGTERM received. Cleaning up...");
+      server.close(() => {
+        console.log("Process terminated.");
+      });
+    });
+
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
 };
 
 startServer();

@@ -11,27 +11,52 @@ const app: Express = express();
 
 app.set("trust proxy", 1);
 
-app.use(cors());
-app.use(helmet());
+const allowedOrigins = [
+  "https://ai-career-consultant.netlify.app",
+  "http://localhost:3000"
+];
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 
-app.use(morgan("dev"));
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
+
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+} else {
+  app.use(morgan("combined"));
+}
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 200,
+  message: {
+    success: false,
+    message: "Too many requests, please try again later."
+  }
 });
 
-app.use(limiter);
+app.use("/api", limiter);
 
 app.use("/api", routes);
 
-app.use("*", (_req, res) => {
+app.use("/api/*", (_req, res) => {
   res.status(404).json({
     success: false,
-    message: "Route not found",
+    message: "API Route not found",
   });
 });
 
