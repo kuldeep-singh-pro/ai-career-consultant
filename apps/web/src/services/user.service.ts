@@ -1,8 +1,8 @@
 import axiosInstance from "../api/axiosInstance";
-import { Profile } from "../types";
+import { User } from "../types";
 
 export const userService = {
-  async getCurrentUser() {
+  async getCurrentUser(): Promise<User> {
     const response =
       await axiosInstance.get(
         "/user/me"
@@ -12,8 +12,8 @@ export const userService = {
   },
 
   async updateCurrentUser(
-    data: Partial<Profile>
-  ) {
+    data: Partial<User>
+  ): Promise<User> {
     const response =
       await axiosInstance.patch(
         "/user/me",
@@ -25,7 +25,7 @@ export const userService = {
 
   async uploadProfilePicture(
     file: File
-  ) {
+  ): Promise<User> {
     const formData =
       new FormData();
 
@@ -49,12 +49,9 @@ export const userService = {
     return response.data.data;
   },
 
-  async deleteAccount() {
-    const response =
-      await axiosInstance.delete(
-        "/user/me"
-      );
-
-    return response.data.data;
+  async deleteAccount(): Promise<void> {
+    await axiosInstance.delete(
+      "/user/me"
+    );
   },
 };
