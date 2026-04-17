@@ -62,6 +62,8 @@ export const uploadProfilePictureController = asyncHandler(
 
 export const deleteAccountController = asyncHandler(
   async (req: AuthRequest, res: Response) => {
+    console.log("Deleting user:", req.user._id);
+
     const userId = req.user._id;
 
     await Promise.all([

@@ -11,36 +11,33 @@ export const settingsService = {
     return response.data.data;
   },
 
-  async updateSettings(data: Partial<UserSettings>) {
-    const response = await axiosInstance.patch(
-      "/settings",
-      data
-    );
-
-    return response.data.data;
-  },
-
-  async resetSettings() {
-    const response = await axiosInstance.post(
-      "/settings/reset"
-    );
+  async updateSettings(
+    data: Partial<UserSettings>
+  ) {
+    const response =
+      await axiosInstance.patch(
+        "/settings",
+        data
+      );
 
     return response.data.data;
   },
 
   async getSummary() {
-    const response = await axiosInstance.get(
-      "/settings/summary"
-    );
+    const response =
+      await axiosInstance.get(
+        "/settings/summary"
+      );
 
     return response.data.data;
   },
 
-  async deleteAccount() {
-    const response = await axiosInstance.delete(
-      "/settings"
+async deleteAccount() {
+  const response =
+    await axiosInstance.delete(
+      "/user/me"
     );
 
-    return response.data.data;
-  },
+  return response.data.data;
+}
 };

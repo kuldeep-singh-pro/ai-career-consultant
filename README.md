@@ -1,159 +1,155 @@
-# Turborepo starter
+# AI Career Consultant Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+AI Career Consultant Platform is a full-stack intelligent career
+guidance web application that helps users analyze their skills, identify
+gaps, generate personalized career paths, and follow structured learning
+roadmaps using AI assistance.
 
-## Using this example
+The platform integrates Gemini AI to dynamically generate career
+strategies based on a user's skill profile and target role.
 
-Run the following command:
+------------------------------------------------------------------------
 
-```sh
-npx create-turbo@latest
-```
+## How to Use the Platform
 
-## What's inside?
+1.  Register an account
+2.  Upload resume or provide skills
+3.  Select target role
+4.  Perform skill gap analysis
+5.  Generate career path
+6.  View roadmap
+7.  Track milestone progress
 
-This Turborepo includes the following packages/apps:
+------------------------------------------------------------------------
 
-### Apps and Packages
+## Key Features
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Authentication
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+-   JWT-based authentication
+-   Secure protected routes
+-   Profile-based data isolation
 
-### Utilities
+### Skill Gap Analysis
 
-This Turborepo has some additional tools already setup for you:
+-   Resume-based skill extraction
+-   Missing skill detection
+-   Match percentage calculation
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Career Path Generation
 
-### Build
+-   AI-generated milestones
+-   Structured progression plan
+-   Skill-learning timeline
 
-To build all apps and packages, run the following command:
+### Roadmap Generator
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+-   Phase-based learning roadmap
+-   Actionable improvement steps
+-   Timeline estimation
 
-```sh
-cd my-turborepo
-turbo build
-```
+### Progress Tracking
 
-Without global `turbo`, use your package manager:
+-   Milestone completion tracking
+-   Overall progress calculation
+-   Career path status updates
 
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+------------------------------------------------------------------------
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Technology Stack
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+### Frontend
 
-```sh
-turbo build --filter=docs
-```
+-   React.js
+-   TypeScript
+-   Tailwind CSS
+-   React Router
+-   TanStack React Query
+-   Axios
 
-Without global `turbo`:
+### Backend
 
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+-   Node.js
+-   Express.js
+-   TypeScript
+-   MongoDB
+-   Mongoose
+-   Gemini AI
+-   Zod validation
 
-### Develop
+------------------------------------------------------------------------
 
-To develop all apps and packages, run the following command:
+## Backend Architecture
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Controller → Service → Model → Database
 
-```sh
-cd my-turborepo
-turbo dev
-```
+Includes:
 
-Without global `turbo`, use your package manager:
+-   DTO validation layer
+-   Authentication middleware
+-   Error handling middleware
+-   AI agent integration layer
 
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+------------------------------------------------------------------------
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Backend Setup
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Create `.env`
 
-```sh
-turbo dev --filter=web
-```
+PORT=5000 MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key JWT_EXPIRE=7d GEMINI_API_KEY=your_api_key
 
-Without global `turbo`:
+Run:
 
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+pnpm install pnpm dev
 
-### Remote Caching
+------------------------------------------------------------------------
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Frontend Setup
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Create `.env`
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+VITE_API_URL=http://localhost:5000
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Run:
 
-```sh
-cd my-turborepo
-turbo login
-```
+pnpm install pnpm dev
 
-Without global `turbo`, use your package manager:
+------------------------------------------------------------------------
 
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+## API Endpoints
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Authentication
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+POST /auth/register POST /auth/login GET /auth/profile
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Skill Gap
 
-```sh
-turbo link
-```
+POST /skillgap/analyze GET /skillgap/latest
 
-Without global `turbo`:
+Career Path
 
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+POST /career/generate GET /career/latest GET /career/all
 
-## Useful Links
+Roadmap
 
-Learn more about the power of Turborepo:
+POST /career/roadmap/generate
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Progress
+
+PATCH /career/:id/milestone PATCH /career/:id/progress
+
+------------------------------------------------------------------------
+
+## Future Improvements
+
+-   Course recommendation engine
+-   Job-role prediction AI
+-   Interview preparation assistant
+-   Real-time notifications
+
+------------------------------------------------------------------------
+
+## Author
+
+Kuldeep Singh Frontend Developer \| MERN Stack \| AI Projects

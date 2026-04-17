@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
 import { ProtectedRoute } from './ProtectedRoute';
-
 import { LandingPage } from '../pages/LandingPage';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
@@ -22,74 +21,22 @@ export const AppRoutes: React.FC = () => {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/otp-verification" element={<OTPVerificationPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route
-            path="/resume-analyzer"
-            element={
-              <ProtectedRoute>
-                <ResumeAnalyzerPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/skill-gap"
-            element={
-              <ProtectedRoute>
-                <SkillGapPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/career-paths"
-            element={
-              <ProtectedRoute>
-                <CareerPathsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/roadmap"
-            element={
-              <ProtectedRoute>
-                <RoadmapPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/mentor-chat"
-            element={
-              <ProtectedRoute>
-                <MentorChatPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <UserPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <SettingsPage />
-              </ProtectedRoute>
-            }
-          />
+          
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/resume-analyzer" element={<ProtectedRoute><ResumeAnalyzerPage /></ProtectedRoute>} />
+          <Route path="/skill-gap" element={<ProtectedRoute><SkillGapPage /></ProtectedRoute>} />
+          <Route path="/career-paths" element={<ProtectedRoute><CareerPathsPage /></ProtectedRoute>} />
+          
+          <Route path="/roadmap/:id" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
+          <Route path="/roadmap" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
+          
+          <Route path="/mentor-chat" element={<ProtectedRoute><MentorChatPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><UserPage /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -104,9 +104,6 @@ export const MentorChatPage: React.FC = () => {
             </h1>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Personalized strategic career guidance.</p>
           </div>
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest">
-            <Sparkles size={14} /> Powered by Gemini
-          </div>
         </header>
 
         <div className="flex flex-1 gap-6 overflow-hidden">
