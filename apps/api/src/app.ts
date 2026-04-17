@@ -12,19 +12,24 @@ const app: Express = express();
 app.set("trust proxy", 1);
 
 const allowedOrigins = [
+  process.env.FRONTEND_URL, 
   "https://ai-career-consultant.netlify.app",
   "http://localhost:3000"
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".netlify.app")) {
       callback(null, true);
     } else {
+      console.error(`CORS Blocked: ${origin}`);
       callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(helmet({
@@ -48,6 +53,7 @@ const limiter = rateLimit({
     message: "Too many requests, please try again later."
   }
 });
+
 
 app.use("/api", limiter);
 

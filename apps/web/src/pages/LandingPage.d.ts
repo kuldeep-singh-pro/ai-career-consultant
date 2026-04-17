@@ -1,2 +1,0 @@
-export declare const LandingPage: React.FC;
-//# sourceMappingURL=LandingPage.d.ts.map
