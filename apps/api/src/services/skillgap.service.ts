@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import skillgapModel from "../models/skillgap.model";
-
+import { DeleteResult } from "mongodb";
 export interface SkillGapInput {
   userId: Types.ObjectId | string;
   resumeId: Types.ObjectId | string;
@@ -42,9 +42,9 @@ export const getLatestSkillGapAnalysis = async (
 export const deleteSkillGapAnalysis = async (
   userId: Types.ObjectId | string,
   resumeId: Types.ObjectId | string
-) => {
+): Promise<DeleteResult> => {
   return skillgapModel.deleteMany({
     userId,
-    resumeId
+    resumeId,
   });
 };

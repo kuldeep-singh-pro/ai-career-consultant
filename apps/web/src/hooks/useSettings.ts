@@ -38,27 +38,10 @@ export const useUpdateSettings =
           ["settings"],
           response
         );
-      }
-  });
-};
 
-export const useResetSettings =
-() =>
-{
-  const queryClient =
-    useQueryClient();
-
-  return useMutation({
-    mutationFn:
-      settingsService.resetSettings,
-
-    onSuccess:
-      (response) =>
-      {
-        queryClient.setQueryData(
-          ["settings"],
-          response
-        );
+        queryClient.invalidateQueries({
+          queryKey: ["settings"]
+        });
       }
   });
 };

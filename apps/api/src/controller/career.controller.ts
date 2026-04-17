@@ -1,227 +1,91 @@
 import { Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { successResponse } from "../utils/ApiResponse";
-import {
-  generateCareerPathWithAi,
-  generateRoadmapWithAi,
-} from "../ai/agents/career.agent";
-import {
-  createCareerPath,
-  getCareerPathsByUserId,
-  getLatestCareerPath,
-  getCareerPathById,
-  updateCareerPathProgress,
-  updateMilestoneCompletion,
-  updateResourceCompletion,
-  updateCareerPathStatus,
-  deleteCareerPath,
-  getUserCareerPathsWithProgress,
-} from "../services/career.service";
 import { AuthRequest } from "../types/auth.types";
-import { ResumeAnalysis } from "../models/resume.analysis";
+import skillgapModel from "../models/skillgap.model";
+import CareerPath from "../models/careerpath.model";
+import * as careerService from "../services/career.service";
+import * as careerAi from "../ai/agents/career.agent";
 
-export const generateCareerPathController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { currentRole, targetRole, skills } = req.body;
+export const generateCareerPathController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const skillgap = await skillgapModel.findOne({ userId: req.user._id }).sort({ createdAt: -1 });
+  if (!skillgap) throw new Error("Skill gap required");
+  const skills = skillgap.currentSkills.map((s: any) => (typeof s === "string" ? s : s.name));
+  const ai = await careerAi.generateCareerPathWithAi("Student", skillgap.targetRole, skills);
+  const path = await careerService.createCareerPath({
+    userId: req.user._id,
+    title: skillgap.targetRole,
+    description: ai.description,
+    milestones: ai.milestones,
+    currentRole: "Student",
+    currentSkills: skills,
+    matchPercentage: ai.matchPercentage,
+  });
+  return successResponse(res, "Generated", path);
+});
 
-    const aiResult = await generateCareerPathWithAi(
-      currentRole,
-      targetRole,
-      skills
-    );
+export const generateQuickCareerPathController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const ai = await careerAi.generateCareerPathWithAi("Entry Level", req.body.role, []);
+  const path = await careerService.createCareerPath({
+    userId: req.user._id,
+    title: req.body.role,
+    description: ai.description,
+    milestones: ai.milestones,
+    currentRole: "Entry Level",
+    currentSkills: [],
+    matchPercentage: ai.matchPercentage,
+  });
+  return successResponse(res, "Quick path generated", path);
+});
 
-    const careerPath = await createCareerPath({
-      userId: req.user._id,
-      ...aiResult,
-    });
+export const generateRoadmapController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const skillgap = await skillgapModel.findOne({ userId: req.user._id }).sort({ createdAt: -1 });
+  if (!skillgap) throw new Error("Skill gap required");
+  const roadmap = await careerAi.generateRoadmapWithAi("Student", skillgap.targetRole, 6);
+  return successResponse(res, "Roadmap generated", roadmap);
+});
 
-    return successResponse(
-      res,
-      "Career path generated successfully",
-      careerPath,
-      201
-    );
-  }
-);
+export const getCareerPathsController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const paths = await CareerPath.find({ userId: req.user._id }).sort({ createdAt: -1 });
+  return successResponse(res, "Fetched", paths);
+});
 
-export const generateRoadmapController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { currentRole, targetRole, timeframe } = req.body;
+export const getCareerPathsWithProgressController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const paths = await careerService.getCareerPathsWithProgress(req.user._id);
+  return successResponse(res, "Fetched with progress", paths);
+});
 
-    const roadmap = await generateRoadmapWithAi(
-      currentRole,
-      targetRole,
-      timeframe
-    );
+export const getLatestCareerPathController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const paths = await careerService.getCareerPathsWithProgress(req.user._id);
+  return successResponse(res, "Latest fetched", paths[0]);
+});
 
-    return successResponse(
-      res,
-      "Roadmap generated successfully",
-      roadmap
-    );
-  }
-);
+export const getCareerPathDetailController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const path = await CareerPath.findOne({ _id: req.params.id, userId: req.user._id });
+  return successResponse(res, "Detail fetched", path);
+});
 
-export const getCareerPathsController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const careerPaths = await getCareerPathsByUserId(req.user._id);
+export const updateProgressController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const updated = await careerService.refreshCareerProgress(req.params.id, req.body.progress);
+  return successResponse(res, "Progress updated", updated);
+});
 
-    return successResponse(
-      res,
-      "Career paths retrieved successfully",
-      careerPaths
-    );
-  }
-);
+export const updateMilestoneController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const updated = await careerService.updateMilestoneStatus(req.params.id, req.body.index, req.body.completed);
+  return successResponse(res, "Milestone updated", updated);
+});
 
-export const getLatestCareerPathController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const careerPath = await getLatestCareerPath(req.user._id);
+export const updateResourceController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const path = await CareerPath.findById(req.params.id);
+  return successResponse(res, "Resource status updated", path);
+});
 
-    return successResponse(
-      res,
-      "Latest career path retrieved successfully",
-      careerPath
-    );
-  }
-);
+export const updateStatusController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const updated = await careerService.updateCareerStatus(req.params.id, req.body.status);
+  return successResponse(res, "Status updated", updated);
+});
 
-export const getCareerPathDetailController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-
-    const careerPath = await getCareerPathById(id);
-
-    return successResponse(
-      res,
-      "Career path details retrieved successfully",
-      careerPath
-    );
-  }
-);
-
-export const updateProgressController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-
-    const updated =
-      await updateCareerPathProgress(id);
-
-    return successResponse(
-      res,
-      "Progress updated successfully",
-      updated
-    );
-  }
-);
-
-export const updateMilestoneController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-    const { milestoneIndex, completed } = req.body;
-
-    const updated = await updateMilestoneCompletion(
-      id,
-      milestoneIndex,
-      completed
-    );
-
-    return successResponse(
-      res,
-      "Milestone status updated successfully",
-      updated
-    );
-  }
-);
-
-export const updateResourceController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-    const { resourceIndex, completed } = req.body;
-
-    const updated = await updateResourceCompletion(
-      id,
-      resourceIndex,
-      completed
-    );
-
-    return successResponse(
-      res,
-      "Resource completion updated successfully",
-      updated
-    );
-  }
-);
-
-export const updateStatusController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    const updated = await updateCareerPathStatus(id, status);
-
-    return successResponse(
-      res,
-      "Career path status updated successfully",
-      updated
-    );
-  }
-);
-
-export const deleteCareerPathController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
-
-    await deleteCareerPath(id);
-
-    return successResponse(
-      res,
-      "Career path deleted successfully"
-    );
-  }
-);
-
-export const getCareerPathsWithProgressController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const careerPaths = await getUserCareerPathsWithProgress(req.user._id);
-
-    return successResponse(
-      res,
-      "Career paths with progress retrieved successfully",
-      careerPaths
-    );
-  }
-);
-
-export const generateQuickCareerPathController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const { targetRole } = req.body;
-
-    const resumeAnalysis = await ResumeAnalysis.findOne({
-      userId: req.user._id,
-    })
-      .sort({ createdAt: -1 })
-      .lean();
-
-    const existingSkills = resumeAnalysis?.skills || [];
-    const currentRole = resumeAnalysis?.experienceLevel || "Professional";
-
-    const aiResult = await generateCareerPathWithAi(
-      currentRole,
-      targetRole,
-      existingSkills
-    );
-
-    const careerPath = await createCareerPath({
-      userId: req.user._id,
-      ...aiResult,
-    });
-
-    return successResponse(
-      res,
-      "Quick career path generated from resume successfully",
-      careerPath,
-      201
-    );
-  }
-);
+export const deleteCareerPathController = asyncHandler(async (req: AuthRequest, res: Response) => {
+  await careerService.deleteCareerPathById(req.params.id, req.user._id);
+  return successResponse(res, "Deleted");
+});

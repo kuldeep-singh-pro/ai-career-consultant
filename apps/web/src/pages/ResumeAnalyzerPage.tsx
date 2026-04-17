@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useUploadResume, useAnalyzeResume } from '../hooks/useResume';
 import { Upload, FileText, Loader2, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 export const ResumeAnalyzerPage: React.FC = () => {
+  const navigate = useNavigate();
   const [dragActive, setDragActive] = useState(false);
+  
   const { mutate: uploadMutate, isPending: isUploading } = useUploadResume();
   const { mutate: analyzeMutate, isPending: isAnalyzing } = useAnalyzeResume();
 
@@ -29,9 +32,25 @@ export const ResumeAnalyzerPage: React.FC = () => {
     if (file.type === 'application/pdf') {
       uploadMutate(file, {
         onSuccess: (data) => {
-          analyzeMutate(data.id);
+          // Trigger AI Analysis after successful upload
+          analyzeMutate(data.id, {
+            onSuccess: () => {
+              // 1. Show Success Message
+              alert('Resume analyzed successfully! Redirecting to your dashboard...');
+              // 2. Navigate to Dashboard
+              navigate('/dashboard');
+            },
+            onError: (err: any) => {
+              alert(err.response?.data?.message || 'Analysis failed. Please try again.');
+            }
+          });
         },
+        onError: (err: any) => {
+          alert(err.response?.data?.message || 'Upload failed.');
+        }
       });
+    } else {
+      alert('Please upload a valid PDF file.');
     }
   };
 

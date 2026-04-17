@@ -1,35 +1,22 @@
-import React
-from "react";
+import React from "react";
 
-import ReactDOM
-from "react-dom/client";
+import ReactDOM from "react-dom/client";
 
-import App
-from "./App";
+import App from "./App";
 
 import "./index.css";
 
-import "./i18n";
-
 import {
   QueryClientProvider
-}
-from "@tanstack/react-query";
+} from "@tanstack/react-query";
 
 import {
   queryClient
-}
-from "./lib/queryClient";
-
-import {
-  SettingsProvider
-}
-from "./context/SettingsContext";
+} from "./lib/queryClient";
 
 import {
   AuthProvider
-}
-from "./context/AuthContext";
+} from "./context/AuthContext";
 
 ReactDOM.createRoot(
   document.getElementById("root")!
@@ -39,9 +26,7 @@ ReactDOM.createRoot(
       client={queryClient}
     >
       <AuthProvider>
-        <SettingsProvider>
-          <App />
-        </SettingsProvider>
+        <App />
       </AuthProvider>
     </QueryClientProvider>
   </React.StrictMode>
