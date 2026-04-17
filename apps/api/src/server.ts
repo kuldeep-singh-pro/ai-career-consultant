@@ -11,6 +11,9 @@ const startServer = async () => {
       console.log(`🚀 Production server running on port ${PORT}`);
     });
 
+ 
+    server.timeout = 120000;
+
     process.on("unhandledRejection", (err: Error) => {
       console.error(`Unhandled Rejection: ${err.message}`);
       server.close(() => process.exit(1));
