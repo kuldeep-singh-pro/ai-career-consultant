@@ -1,11 +1,10 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL as string  || "http://localhost:5000/api",
+  baseURL:
+    (import.meta.env.VITE_API_URL as string) ||
+    "http://localhost:5000/api",
   timeout: 60000,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 axiosInstance.interceptors.request.use((config) => {
@@ -25,7 +24,7 @@ axiosInstance.interceptors.request.use((config) => {
     config.url?.includes(route)
   );
 
-  if (token && !isPublicRoute) {
+  if (token && !isPublicRoute && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -44,11 +43,8 @@ axiosInstance.interceptors.response.use(
       localStorage.getItem("token") &&
       !isAuthRoute
     ) {
-      console.warn("Token expired. Redirecting to login.");
-
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-
       window.location.href = "/login";
     }
 

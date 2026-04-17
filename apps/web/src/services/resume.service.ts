@@ -10,11 +10,7 @@ export const resumeService = {
     const response = await axiosInstance.post<{
       success: boolean;
       data: Resume;
-    }>("/resume/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    }>("/resume/upload", formData);
 
     return response.data.data;
   },
