@@ -104,11 +104,21 @@ export const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] text-slate-900 dark:text-slate-50 font-sans selection:bg-blue-100 selection:text-blue-900">
       <header className="sticky top-0 z-50 border-b border-slate-200/60 dark:border-slate-800/60 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-600 p-1.5 rounded-lg">
-              <Sparkles className="h-5 w-5 text-white" />
+          <div className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate('/')}>
+            <div className="relative h-9 w-9 shrink-0 flex items-center justify-center">
+              <div className="absolute inset-0 bg-blue-600/30 blur-md rounded-lg group-hover:bg-blue-600/50 transition-colors" />
+              <svg viewBox="0 0 24 24" className="relative h-7 w-7 transition-transform duration-500 group-hover:rotate-[10deg]" fill="none">
+                <path d="M12 2L4 20H20L12 2Z" fill="url(#logo-grad)" />
+                <path d="M12 2L9 12H15L12 2Z" fill="white" fillOpacity="0.4" />
+                <defs>
+                  <linearGradient id="logo-grad" x1="12" y1="2" x2="12" y2="20" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#2563EB" />
+                    <stop offset="1" stopColor="#1E40AF" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
-            <span className="text-xl font-black tracking-tighter uppercase">Career AI</span>
+            <span className="text-xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">Career <span className="text-blue-600">AI</span></span>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/login')} className="text-sm font-black uppercase tracking-widest px-4 py-2 hover:text-blue-600 transition-colors">
@@ -236,28 +246,15 @@ export const LandingPage: React.FC = () => {
       </main>
 
       <footer className="mt-32 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#020617] py-20">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="bg-blue-600 p-1.5 rounded-lg">
-                <Sparkles className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-lg font-black tracking-tighter uppercase">Career AI</span>
+        <div className="mx-auto flex flex-col md:flex-row justify-between items-center gap-8 px-6">
+          <div className="flex items-center gap-2 group cursor-pointer" onClick={() => navigate('/')}>
+            <div className="bg-blue-600 p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none">
+                <path d="M12 2L4 20H20L12 2Z" fill="white" />
+              </svg>
             </div>
-            <p className="max-w-xs text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400">
-              Next-generation career guidance platform powered by AI.
-            </p>
+            <span className="text-lg font-black tracking-tighter uppercase text-slate-900 dark:text-white">Career <span className="text-blue-600">AI</span></span>
           </div>
-          <div>
-            <p className="font-black text-xs uppercase tracking-widest mb-6">Product</p>
-            <ul className="space-y-4 text-sm font-bold text-slate-500 dark:text-slate-400">
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Analyzer</li>
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Roadmaps</li>
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">AI Mentor</li>
-            </ul>
-          </div>
-        </div>
-        <div className="mx-auto mt-20 max-w-7xl px-6 border-t border-slate-100 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs font-black uppercase tracking-widest text-slate-400">© 2026 AI Career Consultant</p>
           <div className="flex gap-8 text-xs font-black uppercase tracking-widest text-slate-400">
             <span className="hover:text-blue-600 cursor-pointer transition-colors">GitHub</span>
