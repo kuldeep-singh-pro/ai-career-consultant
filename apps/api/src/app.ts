@@ -14,7 +14,8 @@ app.set("trust proxy", 1);
 const allowedOrigins = [
   process.env.FRONTEND_URL, 
   "https://ai-career-consultant.netlify.app",
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "https://69e2669bce485700084e5976-ai-career-consultant.netlify.app"
 ];
 
 app.use(cors({
