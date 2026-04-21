@@ -17,19 +17,15 @@ export const uploadResumeController = asyncHandler(
       throw new BadRequest("Resume file required");
     }
 
-    console.log("File received:", req.file.originalname);
-
-    const extractedText = await extractTextFromPdf(req.file.buffer);
-
-    console.log("Extracted text length:", extractedText.length);
+    const extractedText = await extractTextFromPdf(
+      req.file.buffer
+    );
 
     const analysis = await processResumeUpload(
       req.user._id,
       req.file.originalname,
       extractedText
     );
-
-    console.log("AI analysis success");
 
     return successResponse(
       res,
@@ -39,10 +35,21 @@ export const uploadResumeController = asyncHandler(
   }
 );
 
-export const getResumeAnalysisController = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
-    const analysis = await getLatestResumeAnalysis(req.user._id);
+export const getResumeAnalysisController =
+  asyncHandler(
+    async (
+      req: AuthRequest,
+      res: Response
+    ) => {
+      const analysis =
+        await getLatestResumeAnalysis(
+          req.user._id
+        );
 
-    return successResponse(res, "Resume analysis retrieved successfully", analysis);
-  }
-);
+      return successResponse(
+        res,
+        "Resume analysis retrieved successfully",
+        analysis
+      );
+    }
+  );

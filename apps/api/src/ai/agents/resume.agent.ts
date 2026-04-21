@@ -15,12 +15,22 @@ Analyze this resume and return STRICT JSON only:
   "skills": string[],
   "missingSkills": string[],
   "experienceLevel": "Beginner | Intermediate | Advanced",
+  "jobTitle": string | null,
+  "inferredRole": string,
+  "currentRole": string,
   "suggestions": string[],
   "recommendedRoles": string[],
   "strengths": string[],
   "weaknesses": string[],
   "careerRoadmap": string[]
-}     
+}
+
+Rules:
+
+1. If resume explicitly contains a job title, set it as jobTitle.
+2. If job title missing, infer role from skills.
+3. Always return best possible role in currentRole.
+4. currentRole = jobTitle OR inferredRole.
 
 Resume:
 ${resumeText}
@@ -49,7 +59,6 @@ ${resumeText}
     const safeJson = cleaned.slice(jsonStart, jsonEnd);
 
     const parsed = JSON.parse(safeJson);
-
 
     const validated = ResumeAnalysisResponseDto.parse(parsed);
 

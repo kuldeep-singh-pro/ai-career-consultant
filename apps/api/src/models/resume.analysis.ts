@@ -5,7 +5,9 @@ export interface IResumeAnalysis {
   resumeId: Types.ObjectId;
 
   score: number;
+
   skills: string[];
+  missingSkills: string[];
 
   suggestions: string[];
   recommendedRoles: string[];
@@ -13,7 +15,13 @@ export interface IResumeAnalysis {
   strengths: string[];
   weaknesses: string[];
 
+  careerRoadmap: string[];
+
   experienceLevel: string;
+
+  jobTitle?: string | null;
+  inferredRole?: string;
+  currentRole?: string;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -37,6 +45,8 @@ const ResumeAnalysisSchema = new Schema<IResumeAnalysis>(
 
     skills: [String],
 
+    missingSkills: [String],
+
     suggestions: [String],
 
     recommendedRoles: [String],
@@ -45,7 +55,22 @@ const ResumeAnalysisSchema = new Schema<IResumeAnalysis>(
 
     weaknesses: [String],
 
-    experienceLevel: String
+    careerRoadmap: [String],
+
+    experienceLevel: String,
+
+    jobTitle: {
+      type: String,
+      default: null
+    },
+
+    inferredRole: {
+      type: String
+    },
+
+    currentRole: {
+      type: String
+    }
   },
   { timestamps: true }
 );

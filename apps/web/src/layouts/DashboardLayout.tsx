@@ -110,7 +110,6 @@ export const DashboardLayout: React.FC<{
               <div className="flex items-center gap-3">
                 <div className="hidden md:flex flex-col items-end">
                   <span className="text-sm font-bold">{user.name}</span>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-black">Pro Member</span>
                 </div>
                 <button onClick={() => navigate("/profile")} className="h-9 w-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-400 flex items-center justify-center text-white font-black text-sm shadow-sm hover:ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950 transition-all">
                   {user.name.charAt(0).toUpperCase()}

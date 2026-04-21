@@ -5,6 +5,7 @@ export const UploadResumeDto = z.object({
   resume: z.any()
 });
 
+
 export const ExperienceLevelEnum = z.enum([
   "Beginner",
   "Intermediate",
@@ -20,6 +21,12 @@ export const ResumeAnalysisResponseDto = z.object({
   missingSkills: z.array(z.string()),
 
   experienceLevel: ExperienceLevelEnum,
+
+  jobTitle: z.string().nullable(),
+
+  inferredRole: z.string(),
+
+  currentRole: z.string(),
 
   suggestions: z.array(z.string()),
 
@@ -64,4 +71,10 @@ export const CreateResumeAnalysisDto = z.object({
   careerRoadmap: z.array(z.string()),
 
   experienceLevel: ExperienceLevelEnum,
+
+  jobTitle: z.string().nullable(),
+
+  inferredRole: z.string(),
+
+  currentRole: z.string(),
 });
