@@ -1,17 +1,12 @@
-import
-{
+import {
   useQuery,
   useMutation,
   useQueryClient
-}
-from "@tanstack/react-query";
+} from "@tanstack/react-query";
 
-import
-{
+import {
   skillGapService
-}
-from "../services/skillgap.service";
-
+} from "../services/skillgap.service";
 
 export const useSkillGap =
 (
@@ -21,12 +16,9 @@ export const useSkillGap =
   return useQuery(
   {
     queryKey: ["skillgap"],
-
     queryFn:
       skillGapService.getSkillGap,
-
     enabled,
-
     staleTime: 0
   });
 };
@@ -44,21 +36,21 @@ export const useGenerateSkillGap =
       skillGapService.generateSkillGap,
 
     onSuccess:
-      () =>
+      async () =>
       {
-        queryClient.removeQueries(
+        await queryClient.removeQueries(
         {
           queryKey: ["skillgap"]
         });
 
-        queryClient.invalidateQueries(
+        await queryClient.invalidateQueries(
         {
           queryKey: ["skillgap"]
         });
 
-        queryClient.refetchQueries(
+        await queryClient.invalidateQueries(
         {
-          queryKey: ["skillgap"]
+          queryKey: ["dashboardStats"]
         });
       }
   });
@@ -77,11 +69,16 @@ export const useDeleteSkillGap =
       skillGapService.deleteSkillGap,
 
     onSuccess:
-      () =>
+      async () =>
       {
-        queryClient.removeQueries(
+        await queryClient.removeQueries(
         {
           queryKey: ["skillgap"]
+        });
+
+        await queryClient.invalidateQueries(
+        {
+          queryKey: ["dashboardStats"]
         });
       }
   });

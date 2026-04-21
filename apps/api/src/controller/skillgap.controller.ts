@@ -25,12 +25,10 @@ async (
   res: Response
 ) =>
 {
-  const {
-    targetRole
-  } =
-  req.body as {
-    targetRole: string
-  };
+  const { targetRole } =
+    req.body as {
+      targetRole: string
+    };
 
   const latestResumeAnalysis =
     await ResumeAnalysis

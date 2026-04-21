@@ -41,7 +41,12 @@ export const skillGapService =
   async deleteSkillGap()
   {
     const response =
-      await axiosInstance.delete(
+      await axiosInstance.delete<
+        {
+          success: boolean;
+          data: { deleted: boolean };
+        }
+      >(
         "/skillgap/analysis"
       );
 
