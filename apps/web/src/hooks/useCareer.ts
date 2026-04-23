@@ -1,18 +1,12 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { careerService } from "../services/career.service";
-
 
 const refreshDashboard = async (queryClient: any) => {
   await queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
   await queryClient.invalidateQueries({ queryKey: ["dashboardProgress"] });
   await queryClient.invalidateQueries({ queryKey: ["dashboardOverview"] });
 };
-
 
 export const useGenerateCareerPath = () => {
   const queryClient = useQueryClient();
@@ -29,13 +23,11 @@ export const useGenerateCareerPath = () => {
   });
 };
 
-
 export const useGenerateQuickCareerPath = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (role: string) =>
-      careerService.generateQuickCareerPath(role),
+    mutationFn: (role: string) => careerService.generateQuickCareerPath(role),
 
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["career", "latest"] });
@@ -46,17 +38,13 @@ export const useGenerateQuickCareerPath = () => {
   });
 };
 
-
 export const useGenerateRoadmap = () => {
   return useMutation({
     mutationFn: careerService.generateRoadmap,
   });
 };
 
-
-export const useLatestCareerPath = (
-  enabled: boolean = true
-) => {
+export const useLatestCareerPath = (enabled: boolean = true) => {
   return useQuery({
     queryKey: ["career", "latest"],
     queryFn: careerService.getLatestCareerPath,
@@ -64,10 +52,7 @@ export const useLatestCareerPath = (
   });
 };
 
-
-export const useCareerPaths = (
-  enabled: boolean = true
-) => {
+export const useCareerPaths = (enabled: boolean = true) => {
   return useQuery({
     queryKey: ["career", "paths"],
     queryFn: careerService.getCareerPathsWithProgress,
@@ -75,19 +60,13 @@ export const useCareerPaths = (
   });
 };
 
-
-export const useCareerPathDetail = (
-  id: string,
-  enabled: boolean = true
-) => {
+export const useCareerPathDetail = (id: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: ["career", "detail", id],
-    queryFn: () =>
-      careerService.getCareerPath(id),
+    queryFn: () => careerService.getCareerPath(id),
     enabled: enabled && !!id,
   });
 };
-
 
 export const useDeleteCareerPath = () => {
   const queryClient = useQueryClient();
@@ -96,7 +75,6 @@ export const useDeleteCareerPath = () => {
     mutationFn: careerService.deleteCareerPath,
 
     onSuccess: async (_, careerPathId) => {
-
       await queryClient.invalidateQueries({
         queryKey: ["career", "paths"],
       });
@@ -131,11 +109,7 @@ export const useUpdateMilestone = () => {
       milestoneIndex: number;
       completed: boolean;
     }) =>
-      careerService.updateMilestone(
-        careerPathId,
-        milestoneIndex,
-        completed
-      ),
+      careerService.updateMilestone(careerPathId, milestoneIndex, completed),
 
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["career", "paths"] });
@@ -148,7 +122,6 @@ export const useUpdateMilestone = () => {
     },
   });
 };
-
 
 export const useUpdateStatus = () => {
   const queryClient = useQueryClient();
@@ -160,11 +133,7 @@ export const useUpdateStatus = () => {
     }: {
       careerPathId: string;
       status: string;
-    }) =>
-      careerService.updateStatus(
-        careerPathId,
-        status
-      ),
+    }) => careerService.updateStatus(careerPathId, status),
 
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["career", "paths"] });
@@ -178,7 +147,6 @@ export const useUpdateStatus = () => {
   });
 };
 
-
 export const useRefreshProgress = () => {
   const queryClient = useQueryClient();
 
@@ -189,11 +157,7 @@ export const useRefreshProgress = () => {
     }: {
       careerPathId: string;
       progress: number;
-    }) =>
-      careerService.refreshProgress(
-        careerPathId,
-        progress
-      ),
+    }) => careerService.refreshProgress(careerPathId, progress),
 
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["career", "paths"] });
