@@ -3,7 +3,7 @@ import { env } from "../config/env";
 
 const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
-  port: 587,
+  port: 2525,
   auth: {
     user: env.EMAIL_USER,
     pass: env.EMAIL_PASS,
@@ -16,7 +16,7 @@ export const sendMail = async (
   html: string
 ) => {
   const info = await transporter.sendMail({
-    from: `"Kuldeep Singh" <kuldeepsinghwebdev@gmail.com>`,
+    from: `"Ai Carrer consultant" <kuldeepsinghwebdev@gmail.com>`,
     to,
     subject,
     html,
